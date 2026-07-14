@@ -28,6 +28,7 @@ export 'src/data/read_receipt_setting.dart';
 // UI — 완성형 채팅 화면
 export 'src/ui/root.dart';
 export 'src/ui/theme.dart';
+export 'src/ui/network.dart' show OfflineBanner, NetworkErrorView;
 export 'src/ui/l10n.dart';
 export 'src/ui/translatable_text.dart';
 export 'src/ui/drawing.dart' show DrawingReplaySetting, DrawingReplayView, DrawingThumbnail;

@@ -4,6 +4,7 @@ import '../core/entities.dart';
 import '../data/client.dart';
 import 'drawing.dart';
 import 'l10n.dart';
+import 'network.dart';
 import 'theme.dart';
 
 class EmoticonShopViewModel extends ChangeNotifier {
@@ -12,6 +13,7 @@ class EmoticonShopViewModel extends ChangeNotifier {
   List<Emoticon> gallery = [];
   Set<String> ownedIds = {};
   bool loading = false;
+  bool loadFailed = false; // 네트워크 등 로드 실패
   String? errorKey;
 
   /// 임티샵 옵션(업로드/판매) — 서버가 appId 결제 확인을 해줘야만 true.
@@ -25,13 +27,14 @@ class EmoticonShopViewModel extends ChangeNotifier {
 
   Future<void> load() async {
     loading = true;
+    loadFailed = false;
     notifyListeners();
     try {
       gallery = await _client.browseEmoticons();
       ownedIds = {for (final e in await _client.getMyEmoticons()) e.id};
       uploadAllowed = (await _client.getShopEntitlement()).uploadEnabled;
     } catch (e) {
-      errorKey = e.toString();
+      loadFailed = true;
     } finally {
       loading = false;
       notifyListeners();
@@ -93,7 +96,9 @@ class _EmoticonShopPageState extends State<EmoticonShopPage> {
                 ),
             ],
           ),
-          body: RefreshIndicator(
+          body: _vm.loadFailed
+              ? NetworkErrorView(onRetry: _vm.load)
+              : RefreshIndicator(
             onRefresh: _vm.load,
             child: _vm.gallery.isEmpty && !_vm.loading
                 ? ListView(children: [

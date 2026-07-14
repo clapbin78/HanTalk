@@ -212,6 +212,11 @@ class HanChatL10n {
     'menu.share': ['공유', 'Share', '共有', '分享'],
     'copied': ['복사했어요', 'Copied', 'コピーしました', '已复制'],
     'forward.title': ['전달할 대화 선택', 'Forward to', '転送先を選択', '选择转发对象'],
+    // 네트워크
+    'net.offline': ['인터넷 연결이 없어요', 'No internet connection', 'インターネット接続がありません', '无网络连接'],
+    'net.errorTitle': ['불러오지 못했어요', 'Couldn\'t load', '読み込めませんでした', '加载失败'],
+    'net.errorDesc': ['네트워크 상태를 확인해 주세요.', 'Please check your connection.', 'ネットワーク状態を確認してください。', '请检查网络连接。'],
+    'net.retry': ['다시 시도', 'Retry', '再試行', '重试'],
     // 번역
     'translate': ['번역', 'Translate', '翻訳', '翻译'],
     'translate.original': ['원문 보기', 'Show Original', '原文を表示', '查看原文'],

@@ -39,6 +39,8 @@ dependencies:
   path_provider: ^2.1.0
   # 그림판 색상환 (iOS/Android 공통 HSV 피커)
   flutter_colorpicker: ^1.1.0
+  # 네트워크 연결 상태 감지 (오프라인 배너)
+  connectivity_plus: ^6.0.0
 
 dev_dependencies:
   flutter_test:

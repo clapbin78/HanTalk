@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -19,7 +21,17 @@ class OnboardingPage extends StatefulWidget {
 enum _Step { permissionNotice, consent, profile, notifications }
 
 class _OnboardingPageState extends State<OnboardingPage> {
-  var _step = _Step.permissionNotice;
+  // 접근권한 안내 화면은 한국(정보통신망법)에서만 의무 → 한국어 기기에서만 노출.
+  // 그 외 국가는 OS의 just-in-time 권한 팝업으로 충족(별도 화면 요구 없음).
+  late _Step _step = _isKorea ? _Step.permissionNotice : _firstAfterNotice;
+
+  bool get _isKorea {
+    final locale = PlatformDispatcher.instance.locale;
+    return locale.languageCode == 'ko' || locale.countryCode == 'KR';
+  }
+
+  _Step get _firstAfterNotice =>
+      _config.hasPolicies ? _Step.consent : _Step.profile;
 
   HanChatConfig get _config => HanChat.client.config;
 
@@ -29,8 +41,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
       body: SafeArea(
         child: switch (_step) {
           _Step.permissionNotice => _PermissionNoticeStep(onNext: () {
-              setState(() =>
-                  _step = _config.hasPolicies ? _Step.consent : _Step.profile);
+              setState(() => _step = _firstAfterNotice);
             }),
           _Step.consent => _ConsentStep(
               config: _config,

@@ -84,7 +84,8 @@ class HanTalkApp extends StatelessWidget {
         Locale('ja'),
         Locale('zh'),
       ],
-      home: const _RootWithSplash(),
+      // 오프라인 시 하단에 얇은 배너
+      home: const OfflineBanner(child: _RootWithSplash()),
     );
   }
 }
