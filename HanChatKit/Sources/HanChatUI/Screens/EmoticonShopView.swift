@@ -84,13 +84,13 @@ struct EmoticonShopView: View {
             .overlay {
                 if viewModel.gallery.isEmpty && !viewModel.isLoading {
                     ContentUnavailableView(
-                        "아직 이모티콘이 없어요",
+                        L.noEmoticonsTitle,
                         systemImage: "face.smiling",
-                        description: Text("첫 이모티콘을 그려서 올려보세요!")
+                        description: Text(L.noEmoticonsSubtitle)
                     )
                 }
             }
-            .navigationTitle("이모티콘")
+            .navigationTitle(L.tabEmoticons)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
@@ -104,13 +104,13 @@ struct EmoticonShopView: View {
                 EmoticonUploadFlow(viewModel: viewModel)
             }
             .alert(
-                "알림",
+                L.notice,
                 isPresented: .init(
                     get: { viewModel.errorMessage != nil },
                     set: { if !$0 { viewModel.errorMessage = nil } }
                 )
             ) {
-                Button("확인", role: .cancel) {}
+                Button(L.ok, role: .cancel) {}
             } message: {
                 Text(viewModel.errorMessage ?? "")
             }
@@ -159,12 +159,12 @@ private struct EmoticonCard: View {
     }
 
     private var buttonTitle: String {
-        if owned { return "보관함에 있음" }
-        // 🚩 유료 가격표 — paidEmoticonsEnabled가 켜지기 전엔 모두 무료라 "받기"만 보임
+        if owned { return L.owned }
+        // 🚩 유료 가격표 — paidEmoticonsEnabled가 켜지기 전엔 모두 무료라 L.getFree만 보임
         if paidEnabled && !emoticon.isFree {
-            return "₩\(emoticon.price)"
+            return L.priceTag(emoticon.price)
         }
-        return "받기"
+        return L.getFree
     }
 }
 
@@ -218,40 +218,40 @@ private struct EmoticonUploadFlow: View {
                             .frame(height: 160)
                             .frame(maxWidth: .infinity)
                     }
-                    Section("이름") {
-                        TextField("예: 두근두근", text: $name)
+                    Section(L.name) {
+                        TextField(L.emoticonNamePlaceholder, text: $name)
                     }
                     // 🚩 유료 가격 입력 — Phase 3에서 paidEmoticonsEnabled로 노출
                     if viewModel.paidEnabled {
-                        Section("가격 (원, 0 = 무료)") {
+                        Section(L.priceSection) {
                             TextField("0", text: $priceText)
                                 .keyboardType(.numberPad)
                         }
                     }
                     Section {
-                        Text("올리면 모든 사용자에게 공개되고, 누구나 채팅에서 쓸 수 있어요. 저작권은 만든 사람(나)에게 있어요.")
+                        Text(L.uploadDisclosure)
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                     }
                 }
-                .navigationTitle("갤러리에 올리기")
+                .navigationTitle(L.uploadToGallery)
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .topBarLeading) {
-                        Button("취소") { dismiss() }
+                        Button(L.cancel) { dismiss() }
                     }
                     ToolbarItem(placement: .topBarTrailing) {
                         Button {
                             upload(payload)
                         } label: {
-                            if isUploading { ProgressView() } else { Text("올리기") }
+                            if isUploading { ProgressView() } else { Text(L.upload) }
                         }
                         .disabled(name.isEmpty || isUploading)
                     }
                 }
             }
         } else {
-            DrawingCanvasView(sendButtonTitle: "다음") { drawn in
+            DrawingCanvasView(sendButtonTitle: L.next) { drawn in
                 payload = drawn
             }
         }

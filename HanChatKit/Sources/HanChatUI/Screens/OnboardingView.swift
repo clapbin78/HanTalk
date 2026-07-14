@@ -65,9 +65,9 @@ private struct ConsentStepView: View {
         VStack(spacing: 24) {
             Spacer()
             Text("💬").font(.system(size: 64))
-            Text("\(configuration.serviceName)에 오신 걸 환영해요")
+            Text(L.welcomeTitle(configuration.serviceName))
                 .font(.title2.bold())
-            Text("메시지는 서버에 남지 않고,\n기기에서도 24시간 뒤 사라져요.")
+            Text(L.welcomeSubtitle)
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
             Spacer()
@@ -76,22 +76,22 @@ private struct ConsentStepView: View {
                 if let termsURL = configuration.termsOfServiceURL {
                     consentRow(
                         isOn: $agreedTerms,
-                        title: "이용약관 동의 (필수)",
-                        link: PolicyLink(title: "이용약관", url: termsURL)
+                        title: L.agreeTerms,
+                        link: PolicyLink(title: L.terms, url: termsURL)
                     )
                 }
                 if let privacyURL = configuration.privacyPolicyURL {
                     consentRow(
                         isOn: $agreedPrivacy,
-                        title: "개인정보 수집·이용 동의 (필수)",
-                        link: PolicyLink(title: "개인정보처리방침", url: privacyURL)
+                        title: L.agreePrivacy,
+                        link: PolicyLink(title: L.privacyPolicy, url: privacyURL)
                     )
                 }
             }
             .padding(.horizontal)
 
             Button(action: onNext) {
-                Text("동의하고 시작하기")
+                Text(L.agreeAndStart)
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
@@ -111,7 +111,7 @@ private struct ConsentStepView: View {
             }
             .toggleStyle(CheckboxToggleStyle())
             Spacer()
-            Button("보기") { presentedPolicy = link }
+            Button(L.view) { presentedPolicy = link }
                 .font(.subheadline)
         }
         .padding(12)
@@ -149,13 +149,13 @@ private struct ProfileStepView: View {
     var body: some View {
         Form {
             Section {
-                TextField("닉네임", text: $nickname)
-                TextField("전화번호 (예: 01012345678)", text: $phoneNumber)
+                TextField(L.nickname, text: $nickname)
+                TextField(L.phonePlaceholder, text: $phoneNumber)
                     .keyboardType(.phonePad)
             } header: {
-                Text("프로필")
+                Text(L.profile)
             } footer: {
-                Text("전화번호 원본은 서버로 전송되지 않아요. 친구 찾기에는 암호화된 해시만 사용됩니다.")
+                Text(L.phonePrivacyFooter)
             }
 
             if let errorMessage {
@@ -168,12 +168,12 @@ private struct ProfileStepView: View {
                 if isSubmitting {
                     ProgressView()
                 } else {
-                    Text("등록")
+                    Text(L.register)
                 }
             }
             .disabled(nickname.isEmpty || phoneNumber.count < 10 || isSubmitting)
         }
-        .navigationTitle("프로필 만들기")
+        .navigationTitle(L.createProfile)
     }
 
     private func submit() {
@@ -204,9 +204,9 @@ private struct NotificationStepView: View {
             Image(systemName: "bell.badge.fill")
                 .font(.system(size: 56))
                 .foregroundStyle(.tint)
-            Text("새 메시지를 놓치지 마세요")
+            Text(L.notifTitle)
                 .font(.title2.bold())
-            Text("친구가 보낸 메시지가 도착하면 알려드려요.\n푸시에 메시지 내용은 담기지 않아요.")
+            Text(L.notifSubtitle)
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
             Spacer()
@@ -217,11 +217,11 @@ private struct NotificationStepView: View {
                     onFinish()
                 }
             } label: {
-                Text("알림 켜기").frame(maxWidth: .infinity)
+                Text(L.enableNotifications).frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
 
-            Button("나중에 할게요", action: onFinish)
+            Button(L.maybeLater, action: onFinish)
                 .foregroundStyle(.secondary)
                 .padding(.bottom, 24)
         }

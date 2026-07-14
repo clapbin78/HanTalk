@@ -36,9 +36,9 @@ final class ChatListViewModel {
 
     /// 1:1 방 제목 = 상대 이름
     func title(for room: ChatRoom, myID: String) -> String {
-        if room.kind == .group { return room.name ?? "단톡방" }
+        if room.kind == .group { return room.name ?? L.groupChat }
         let otherID = room.memberIDs.first { $0 != myID }
-        return friends.first { $0.id == otherID }?.displayName ?? "알 수 없음"
+        return friends.first { $0.id == otherID }?.displayName ?? L.unknown
     }
 }
 
@@ -74,7 +74,7 @@ struct ChatListView: View {
                                         .foregroundStyle(.secondary)
                                 }
                             }
-                            Text(room.lastMessagePreview ?? "대화를 시작해 보세요")
+                            Text(room.lastMessagePreview ?? L.startConversation)
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
                                 .lineLimit(1)
@@ -92,13 +92,13 @@ struct ChatListView: View {
             .overlay {
                 if viewModel.rooms.isEmpty {
                     ContentUnavailableView(
-                        "채팅이 없어요",
+                        L.noChatsTitle,
                         systemImage: "message",
-                        description: Text("친구 탭에서 친구를 눌러 대화를 시작하세요.")
+                        description: Text(L.noChatsSubtitle)
                     )
                 }
             }
-            .navigationTitle("채팅")
+            .navigationTitle(L.tabChats)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
@@ -136,10 +136,10 @@ private struct NewGroupSheet: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("방 이름") {
-                    TextField("예: 불금 모임 🍻", text: $groupName)
+                Section(L.roomName) {
+                    TextField(L.roomNamePlaceholder, text: $groupName)
                 }
-                Section("초대할 친구 (2명 이상)") {
+                Section(L.inviteFriends) {
                     ForEach(viewModel.friends) { friend in
                         Button {
                             if selectedIDs.contains(friend.id) {
@@ -160,14 +160,14 @@ private struct NewGroupSheet: View {
                     }
                 }
             }
-            .navigationTitle("단톡방 만들기")
+            .navigationTitle(L.newGroupChat)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("취소") { dismiss() }
+                    Button(L.cancel) { dismiss() }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("만들기") {
+                    Button(L.create) {
                         Task {
                             if let room = await viewModel.createGroup(
                                 name: groupName,

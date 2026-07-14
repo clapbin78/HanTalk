@@ -1,0 +1,83 @@
+{
+  "sourceLanguage" : "ko",
+  "version" : "1.0",
+  "strings" : {
+    "사용자 등록이 필요해요." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Please sign up first." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "ユーザー登録が必要です。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "请先注册。" } }
+      }
+    },
+    "채팅방을 찾을 수 없어요." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Chat room not found." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "チャットルームが見つかりません。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "找不到聊天室。" } }
+      }
+    },
+    "네트워크 오류가 발생했어요. 다시 시도해 주세요." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "A network error occurred. Please try again." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "ネットワークエラーが発生しました。もう一度お試しください。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "网络错误，请重试。" } }
+      }
+    },
+    "권한이 거부되었어요: %@" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Permission denied: %@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "権限が拒否されました: %@" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "权限被拒绝：%@" } }
+      }
+    },
+    "아직 준비 중인 기능이에요." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "This feature isn't available yet." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "この機能はまだ準備中です。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "该功能尚未开放。" } }
+      }
+    },
+    "닉네임을 입력해 주세요." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Please enter a nickname." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "ニックネームを入力してください。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "请输入昵称。" } }
+      }
+    },
+    "단톡방은 3명 이상부터 만들 수 있어요." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Group chats need at least 3 members." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "グループチャットは3人以上から作成できます。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "群聊至少需要3人。" } }
+      }
+    },
+    "빈 메시지는 보낼 수 없어요." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Can't send an empty message." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "空のメッセージは送信できません。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "不能发送空消息。" } }
+      }
+    },
+    "이모티콘 이름을 입력해 주세요." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Please name your emoticon." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "スタンプの名前を入力してください。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "请为表情命名。" } }
+      }
+    },
+    "그림을 먼저 그려주세요." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Please draw something first." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "まず絵を描いてください。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "请先画点什么。" } }
+      }
+    },
+    "가격은 0 이상이어야 해요." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Price must be 0 or more." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "価格は0以上にしてください。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "价格必须大于等于0。" } }
+      }
+    }
+  }
+}

@@ -54,6 +54,13 @@ final class ChatRoomViewModel {
 
     var myEmoticons: [Emoticon] = []
 
+    // 🚩 AI 답장 추천 — aiAssistantEnabled가 켜져야 UI에 나타난다 (현재 숨김)
+    var aiSuggestions: [String] = []
+
+    func loadAISuggestions() async {
+        aiSuggestions = (try? await client.suggestReplies(context: messages)) ?? []
+    }
+
     func loadMyEmoticons() async {
         myEmoticons = (try? await client.getMyEmoticons()) ?? []
     }
@@ -71,7 +78,7 @@ final class ChatRoomViewModel {
 
     func senderName(for message: Message, myID: String) -> String? {
         guard message.senderID != myID else { return nil }
-        return friends.first { $0.id == message.senderID }?.displayName ?? "알 수 없음"
+        return friends.first { $0.id == message.senderID }?.displayName ?? L.unknown
     }
 }
 
@@ -122,7 +129,7 @@ struct ChatRoomView: View {
 
             inputBar
         }
-        .navigationTitle(room.kind == .group ? (room.name ?? "단톡방") : "")
+        .navigationTitle(room.kind == .group ? (room.name ?? L.groupChat) : "")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showDrawingSheet) {
             DrawingCanvasView { payload in
@@ -137,18 +144,48 @@ struct ChatRoomView: View {
             }
             .presentationDetents([.height(280)])
         }
-        .onAppear { viewModel.startObserving() }
+        .onAppear {
+            viewModel.startObserving()
+            if client.configuration.aiAssistantEnabled {
+                Task { await viewModel.loadAISuggestions() }
+            }
+        }
         .onDisappear { viewModel.stopObserving() }
     }
 
     private var retentionNotice: some View {
-        Text("⏳ 메시지는 24시간 뒤 자동으로 사라져요")
+        Text(L.retentionNotice)
             .font(.caption2)
             .foregroundStyle(.secondary)
             .padding(.vertical, 6)
     }
 
     private var inputBar: some View {
+        VStack(spacing: 6) {
+            // 🚩 AI 답장 추천 칩 — 플래그가 꺼져 있으면 이 영역 전체가 렌더링되지 않음
+            if client.configuration.aiAssistantEnabled, !viewModel.aiSuggestions.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(viewModel.aiSuggestions, id: \.self) { suggestion in
+                            Button(suggestion) {
+                                viewModel.inputText = suggestion
+                            }
+                            .font(.subheadline)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(Color(.secondarySystemBackground), in: Capsule())
+                        }
+                    }
+                    .padding(.horizontal, 12)
+                }
+            }
+            inputControls
+        }
+        .padding(.vertical, 8)
+        .background(.bar)
+    }
+
+    private var inputControls: some View {
         HStack(spacing: 8) {
             Button {
                 showDrawingSheet = true
@@ -164,7 +201,7 @@ struct ChatRoomView: View {
                     .font(.title3)
             }
 
-            TextField("메시지 입력", text: Bindable(viewModel).inputText, axis: .vertical)
+            TextField(L.messagePlaceholder, text: Bindable(viewModel).inputText, axis: .vertical)
                 .lineLimit(1...4)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
@@ -179,8 +216,6 @@ struct ChatRoomView: View {
             .disabled(viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
         }
         .padding(.horizontal, 12)
-        .padding(.vertical, 8)
-        .background(.bar)
     }
 }
 
@@ -217,17 +252,17 @@ private struct EmoticonPickerSheet: View {
             .overlay {
                 if viewModel.myEmoticons.isEmpty {
                     ContentUnavailableView(
-                        "보관함이 비어있어요",
+                        L.emptyCollectionTitle,
                         systemImage: "face.dashed",
-                        description: Text("이모티콘 탭에서 받아오거나 직접 그려보세요!")
+                        description: Text(L.emptyCollectionSubtitle)
                     )
                 }
             }
-            .navigationTitle("내 이모티콘")
+            .navigationTitle(L.myEmoticons)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("닫기") { dismiss() }
+                    Button(L.close) { dismiss() }
                 }
             }
         }
@@ -286,10 +321,10 @@ struct MessageBubbleView: View {
     private var metadata: some View {
         VStack(alignment: isMine ? .trailing : .leading, spacing: 2) {
             if isMine && message.deliveryState == .sending {
-                Text("전송 중").font(.caption2).foregroundStyle(.secondary)
+                Text(L.sending).font(.caption2).foregroundStyle(.secondary)
             }
             if isMine && message.deliveryState == .failed {
-                Text("실패").font(.caption2).foregroundStyle(.red)
+                Text(L.sendFailed).font(.caption2).foregroundStyle(.red)
             }
             Text(message.sentAt, style: .time)
                 .font(.caption2)

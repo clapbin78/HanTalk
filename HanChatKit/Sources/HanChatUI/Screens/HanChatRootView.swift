@@ -44,16 +44,16 @@ struct MainTabView: View {
     var body: some View {
         TabView {
             FriendListView(client: client, me: me)
-                .tabItem { Label("친구", systemImage: "person.2.fill") }
+                .tabItem { Label(L.tabFriends, systemImage: "person.2.fill") }
 
             ChatListView(client: client, me: me)
-                .tabItem { Label("채팅", systemImage: "message.fill") }
+                .tabItem { Label(L.tabChats, systemImage: "message.fill") }
 
             EmoticonShopView(client: client)
-                .tabItem { Label("이모티콘", systemImage: "face.smiling.inverse") }
+                .tabItem { Label(L.tabEmoticons, systemImage: "face.smiling.inverse") }
 
             SettingsView(client: client, me: me)
-                .tabItem { Label("설정", systemImage: "gearshape.fill") }
+                .tabItem { Label(L.tabSettings, systemImage: "gearshape.fill") }
         }
     }
 }
@@ -75,38 +75,38 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("내 프로필") {
-                    LabeledContent("닉네임", value: me.nickname)
+                Section(L.myProfile) {
+                    LabeledContent(L.nickname, value: me.nickname)
                 }
-                Section("채팅") {
-                    Toggle("그림 그리는 과정 재생", isOn: $drawingReplayEnabled)
-                    Text("끄면 완성된 그림만 바로 표시돼요.")
+                Section(L.tabChats) {
+                    Toggle(L.drawingReplayToggle, isOn: $drawingReplayEnabled)
+                    Text(L.drawingReplayFooter)
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
-                Section("메시지 보관") {
-                    LabeledContent("자동 삭제", value: retentionDescription)
-                    Text("메시지는 서버에 저장되지 않으며, 이 기기에서도 위 기간이 지나면 자동으로 삭제됩니다.")
+                Section(L.retentionSection) {
+                    LabeledContent(L.autoDelete, value: retentionDescription)
+                    Text(L.retentionFooter)
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
                 // 약관 URL이 주입된 경우에만 표시 (호스트 앱이 자체 약관을 쓰면 이 섹션은 안 보임)
                 if client.configuration.hasPolicies {
-                    Section("약관 및 정책") {
+                    Section(L.policiesSection) {
                         if let termsURL = client.configuration.termsOfServiceURL {
-                            Button("이용약관") {
-                                presentedPolicy = PolicyItem(title: "이용약관", url: termsURL)
+                            Button(L.terms) {
+                                presentedPolicy = PolicyItem(title: L.terms, url: termsURL)
                             }
                         }
                         if let privacyURL = client.configuration.privacyPolicyURL {
-                            Button("개인정보처리방침") {
-                                presentedPolicy = PolicyItem(title: "개인정보처리방침", url: privacyURL)
+                            Button(L.privacyPolicy) {
+                                presentedPolicy = PolicyItem(title: L.privacyPolicy, url: privacyURL)
                             }
                         }
                     }
                 }
             }
-            .navigationTitle("설정")
+            .navigationTitle(L.tabSettings)
             .sheet(item: $presentedPolicy) { policy in
                 PolicySheet(title: policy.title, url: policy.url)
             }
@@ -115,8 +115,8 @@ struct SettingsView: View {
 
     private var retentionDescription: String {
         switch client.configuration.localRetention {
-        case .keepForever: return "안 함"
-        case .expireAfter(let seconds): return "\(Int(seconds / 3600))시간 후"
+        case .keepForever: return L.never
+        case .expireAfter(let seconds): return L.afterHours(Int(seconds / 3600))
         }
     }
 }

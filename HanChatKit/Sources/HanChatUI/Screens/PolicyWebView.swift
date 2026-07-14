@@ -29,7 +29,7 @@ struct PolicySheet: View {
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
-                        Button("닫기") { dismiss() }
+                        Button(L.close) { dismiss() }
                     }
                 }
         }

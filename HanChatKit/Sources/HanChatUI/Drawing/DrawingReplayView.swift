@@ -1,7 +1,7 @@
 import SwiftUI
 import HanChatCore
 
-/// 그림 메시지 표시 + "그리는 과정 재생".
+/// 그림 메시지 표시 + L.replayA11y.
 ///
 /// 아이메시지 같은 효과지만 서버 비용은 0에 가깝다:
 /// 각 점에 기록된 타임스탬프(t)만으로 수신 기기에서 그리기를 다시 재생하기 때문.
@@ -65,7 +65,7 @@ struct DrawingReplayView: View {
                         .foregroundStyle(.secondary)
                         .padding(6)
                 }
-                .accessibilityLabel("그리는 과정 재생")
+                .accessibilityLabel(L.replayA11y)
             }
         }
         .onAppear {

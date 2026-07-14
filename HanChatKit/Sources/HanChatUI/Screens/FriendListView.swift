@@ -29,7 +29,7 @@ final class FriendListViewModel {
         defer { isSyncing = false }
         do {
             guard await permissions.requestContacts() else {
-                errorMessage = "연락처 권한이 필요해요. 설정에서 허용해 주세요."
+                errorMessage = L.contactsPermissionNeeded
                 return
             }
             let contacts = try await permissions.readContacts()
@@ -82,11 +82,11 @@ struct FriendListView: View {
         NavigationStack {
             List {
                 Section {
-                    LabeledContent("내 프로필", value: me.nickname)
+                    LabeledContent(L.myProfile, value: me.nickname)
                 }
-                Section("친구 \(viewModel.friends.count)") {
+                Section(L.friendsCount(viewModel.friends.count)) {
                     if viewModel.friends.isEmpty {
-                        Text("아직 친구가 없어요. 연락처를 동기화해 보세요!")
+                        Text(L.noFriendsYet)
                             .foregroundStyle(.secondary)
                     }
                     ForEach(viewModel.friends) { friend in
@@ -111,14 +111,14 @@ struct FriendListView: View {
                     }
                 }
             }
-            .navigationTitle("친구")
+            .navigationTitle(L.tabFriends)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
-                        Button("연락처 전체 등록") {
+                        Button(L.syncAllContacts) {
                             Task { await viewModel.syncContacts(mode: .all) }
                         }
-                        Button("직접 선택해서 등록") {
+                        Button(L.syncManualContacts) {
                             Task { await viewModel.syncContacts(mode: .manual) }
                         }
                     } label: {
@@ -137,13 +137,13 @@ struct FriendListView: View {
                 CandidatePickerSheet(viewModel: viewModel)
             }
             .alert(
-                "알림",
+                L.notice,
                 isPresented: .init(
                     get: { viewModel.errorMessage != nil },
                     set: { if !$0 { viewModel.errorMessage = nil } }
                 )
             ) {
-                Button("확인", role: .cancel) {}
+                Button(L.ok, role: .cancel) {}
             } message: {
                 Text(viewModel.errorMessage ?? "")
             }
@@ -186,20 +186,20 @@ private struct CandidatePickerSheet: View {
             .overlay {
                 if viewModel.candidates.isEmpty {
                     ContentUnavailableView(
-                        "가입한 친구가 없어요",
+                        L.noCandidatesTitle,
                         systemImage: "person.slash",
-                        description: Text("연락처 중 아직 가입한 사람이 없네요.")
+                        description: Text(L.noCandidatesSubtitle)
                     )
                 }
             }
-            .navigationTitle("친구 선택")
+            .navigationTitle(L.selectFriends)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("취소") { dismiss() }
+                    Button(L.cancel) { dismiss() }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("등록 (\(viewModel.selectedCandidateIDs.count))") {
+                    Button(L.addSelected(viewModel.selectedCandidateIDs.count)) {
                         Task { await viewModel.registerSelectedCandidates() }
                     }
                     .disabled(viewModel.selectedCandidateIDs.isEmpty)

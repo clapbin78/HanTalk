@@ -8,7 +8,9 @@ public struct RegisterUserUseCase: Sendable {
 
     public func callAsFunction(nickname: String, phoneNumber: String) async throws -> User {
         let trimmed = nickname.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { throw HanChatError.storage("닉네임을 입력해 주세요.") }
+        guard !trimmed.isEmpty else {
+            throw HanChatError.storage(String(localized: "닉네임을 입력해 주세요.", bundle: .module))
+        }
         return try await users.register(nickname: trimmed, phoneNumber: phoneNumber)
     }
 }
@@ -39,7 +41,7 @@ public struct CreateChatRoomUseCase: Sendable {
 
     public func group(name: String, memberIDs: [String]) async throws -> ChatRoom {
         guard memberIDs.count >= 3 else {
-            throw HanChatError.storage("단톡방은 3명 이상부터 만들 수 있어요.")
+            throw HanChatError.storage(String(localized: "단톡방은 3명 이상부터 만들 수 있어요.", bundle: .module))
         }
         return try await rooms.createRoom(kind: .group, name: name, memberIDs: memberIDs)
     }
@@ -53,7 +55,7 @@ public struct SendMessageUseCase: Sendable {
     public func callAsFunction(_ draft: MessageDraft, roomID: String) async throws -> Message {
         if case .text(let text) = draft,
            text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            throw HanChatError.storage("빈 메시지는 보낼 수 없어요.")
+            throw HanChatError.storage(String(localized: "빈 메시지는 보낼 수 없어요.", bundle: .module))
         }
         return try await messages.send(draft, roomID: roomID)
     }

@@ -20,16 +20,16 @@ public struct UploadEmoticonUseCase: Sendable {
     public func callAsFunction(name: String, payload: DrawingPayload, price: Int = 0) async throws -> Emoticon {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else {
-            throw HanChatError.storage("이모티콘 이름을 입력해 주세요.")
+            throw HanChatError.storage(String(localized: "이모티콘 이름을 입력해 주세요.", bundle: .module))
         }
         guard !payload.strokes.isEmpty else {
-            throw HanChatError.storage("그림을 먼저 그려주세요.")
+            throw HanChatError.storage(String(localized: "그림을 먼저 그려주세요.", bundle: .module))
         }
         guard price >= 0 else {
-            throw HanChatError.storage("가격은 0 이상이어야 해요.")
+            throw HanChatError.storage(String(localized: "가격은 0 이상이어야 해요.", bundle: .module))
         }
         guard price == 0 || allowPaid else {
-            throw HanChatError.storage("유료 이모티콘 판매는 아직 열리지 않았어요.")
+            throw HanChatError.featureDisabled
         }
         guard let me = try await users.currentUser() else {
             throw HanChatError.notRegistered

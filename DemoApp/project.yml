@@ -18,7 +18,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.hantalk.demo
         MARKETING_VERSION: 0.1.0
         CURRENT_PROJECT_VERSION: 1
-        TARGETED_DEVICE_FAMILY: 1
+        TARGETED_DEVICE_FAMILY: "1,2"   # iPhone + iPad만 (Mac/비전 제외)
         CODE_SIGN_STYLE: Automatic
         # 실기기 테스트: 아래에 본인 Apple Developer 팀 ID를 넣으면
         # xcodegen 재생성 후에도 서명 설정이 유지됨 (Xcode에서 확인 가능)

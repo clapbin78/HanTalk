@@ -190,7 +190,7 @@ public final class DefaultMessageRepository: MessageRepository, @unchecked Senda
         await notifier.notify("messages:\(roomID)")
 
         if message.deliveryState == .failed {
-            throw HanChatError.transport("메시지 전송에 실패했어요. 다시 시도해 주세요.")
+            throw HanChatError.transport("send failed")
         }
         return message
     }

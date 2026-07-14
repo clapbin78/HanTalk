@@ -38,8 +38,44 @@ struct HanTalkDemoApp: App {
 
     var body: some Scene {
         WindowGroup {
-            HanChatRootView()
+            RootWithSplash()
                 .tint(Color(red: 0.96, green: 0.77, blue: 0.0))
+        }
+    }
+}
+
+/// 앱 로딩(스플래시) 화면 — SDK 초기화 동안 브랜드 노출 후 부드럽게 전환
+private struct RootWithSplash: View {
+    @State private var showSplash = true
+
+    var body: some View {
+        ZStack {
+            HanChatRootView()
+            if showSplash {
+                SplashView()
+                    .transition(.opacity)
+            }
+        }
+        .task {
+            try? await Task.sleep(for: .seconds(1.2))
+            withAnimation(.easeOut(duration: 0.4)) { showSplash = false }
+        }
+    }
+}
+
+private struct SplashView: View {
+    var body: some View {
+        ZStack {
+            Color(red: 0.96, green: 0.77, blue: 0.0).ignoresSafeArea()
+            VStack(spacing: 12) {
+                Text("💬").font(.system(size: 72))
+                Text("한톡")
+                    .font(.largeTitle.bold())
+                    .foregroundStyle(.black.opacity(0.85))
+                Text("24시간 뒤 사라지는 대화")
+                    .font(.subheadline)
+                    .foregroundStyle(.black.opacity(0.55))
+            }
         }
     }
 }

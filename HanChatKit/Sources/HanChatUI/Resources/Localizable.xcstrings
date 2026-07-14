@@ -1,0 +1,310 @@
+{
+  "sourceLanguage" : "ko",
+  "version" : "1.0",
+  "strings" : {
+    "취소" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Cancel" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "キャンセル" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "取消" } } } },
+    "확인" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "OK" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "OK" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "确定" } } } },
+    "알림" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Notice" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "お知らせ" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "提示" } } } },
+    "닫기" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Close" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "閉じる" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "关闭" } } } },
+    "보내기" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Send" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "送信" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "发送" } } } },
+    "다음" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Next" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "次へ" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "下一步" } } } },
+    "알 수 없음" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Unknown" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "不明" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "未知" } } } },
+    "친구" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Friends" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "友だち" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "朋友" } } } },
+    "채팅" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Chats" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "チャット" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "聊天" } } } },
+    "이모티콘" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Emoticons" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "スタンプ" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "表情" } } } },
+    "설정" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Settings" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "設定" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "设置" } } } },
+    "%@에 오신 걸 환영해요" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Welcome to %@" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "%@へようこそ" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "欢迎来到%@" } } } },
+    "메시지는 서버에 남지 않고,\n기기에서도 24시간 뒤 사라져요." : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Messages never stay on our servers,\nand disappear from your device after 24 hours." } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "メッセージはサーバーに残らず、\n端末からも24時間後に消えます。" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "消息不会保存在服务器上，\n24小时后也会从设备中消失。" } } } },
+    "이용약관 동의 (필수)" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Agree to Terms of Service (required)" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "利用規約に同意（必須）" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "同意服务条款（必填）" } } } },
+    "개인정보 수집·이용 동의 (필수)" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Agree to Privacy Policy (required)" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "個人情報の取扱いに同意（必須）" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "同意隐私政策（必填）" } } } },
+    "보기" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "View" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "見る" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "查看" } } } },
+    "동의하고 시작하기" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Agree & Start" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "同意して始める" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "同意并开始" } } } },
+    "이용약관" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Terms of Service" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "利用規約" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "服务条款" } } } },
+    "개인정보처리방침" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Privacy Policy" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "プライバシーポリシー" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "隐私政策" } } } },
+    "프로필" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Profile" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "プロフィール" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "个人资料" } } } },
+    "닉네임" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Nickname" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "ニックネーム" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "昵称" } } } },
+    "전화번호 (예: 01012345678)" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Phone number (e.g. 5551234567)" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "電話番号（例: 09012345678）" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "电话号码（例：13800138000）" } } } },
+    "전화번호 원본은 서버로 전송되지 않아요. 친구 찾기에는 암호화된 해시만 사용됩니다." : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Your phone number never leaves your device — only an encrypted hash is used to find friends." } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "電話番号そのものはサーバーに送信されません。友だち検索には暗号化されたハッシュのみ使用されます。" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "手机号原文不会上传到服务器，查找朋友仅使用加密哈希值。" } } } },
+    "등록" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Sign Up" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "登録" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "注册" } } } },
+    "프로필 만들기" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Create Profile" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "プロフィール作成" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "创建个人资料" } } } },
+    "새 메시지를 놓치지 마세요" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Never miss a message" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "新着メッセージを見逃さない" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "不错过任何新消息" } } } },
+    "친구가 보낸 메시지가 도착하면 알려드려요.\n푸시에 메시지 내용은 담기지 않아요." : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "We'll notify you when messages arrive.\nNotifications never include message content." } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "メッセージが届いたらお知らせします。\n通知に本文は含まれません。" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "收到消息时会通知您。\n通知中不包含消息内容。" } } } },
+    "알림 켜기" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Enable Notifications" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "通知をオンにする" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "开启通知" } } } },
+    "나중에 할게요" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Maybe Later" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "あとで" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "以后再说" } } } },
+    "내 프로필" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "My Profile" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "マイプロフィール" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "我的资料" } } } },
+    "친구 %lld" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Friends (%lld)" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "友だち %lld" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "朋友 %lld" } } } },
+    "아직 친구가 없어요. 연락처를 동기화해 보세요!" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "No friends yet — try syncing your contacts!" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "まだ友だちがいません。連絡先を同期してみましょう！" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "还没有朋友，试试同步通讯录吧！" } } } },
+    "연락처 전체 등록" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Add All from Contacts" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "連絡先を全員登録" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "添加全部联系人" } } } },
+    "직접 선택해서 등록" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Choose Who to Add" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "選んで登録" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "手动选择添加" } } } },
+    "가입한 친구가 없어요" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "No registered friends found" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "登録済みの友だちがいません" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "没有已注册的朋友" } } } },
+    "연락처 중 아직 가입한 사람이 없네요." : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "None of your contacts have joined yet." } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "連絡先の中にまだ利用者がいません。" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "通讯录中还没有人加入。" } } } },
+    "친구 선택" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Select Friends" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "友だちを選択" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "选择朋友" } } } },
+    "등록 (%lld)" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Add (%lld)" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "登録 (%lld)" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "添加 (%lld)" } } } },
+    "연락처 권한이 필요해요. 설정에서 허용해 주세요." : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Contacts permission is required. Please allow it in Settings." } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "連絡先へのアクセス許可が必要です。設定で許可してください。" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "需要通讯录权限，请在设置中允许。" } } } },
+    "단톡방" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Group Chat" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "グループチャット" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "群聊" } } } },
+    "대화를 시작해 보세요" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Start a conversation" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "会話を始めましょう" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "开始聊天吧" } } } },
+    "채팅이 없어요" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "No chats yet" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "チャットがありません" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "暂无聊天" } } } },
+    "친구 탭에서 친구를 눌러 대화를 시작하세요." : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Tap a friend in the Friends tab to start chatting." } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "友だちタブで友だちをタップして会話を始めましょう。" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在朋友标签页点击朋友开始聊天。" } } } },
+    "방 이름" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Room Name" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "ルーム名" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "群名称" } } } },
+    "예: 불금 모임 🍻" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "e.g. Friday Night 🍻" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "例: 金曜の集まり🍻" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "例如：周五聚会🍻" } } } },
+    "초대할 친구 (2명 이상)" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Invite Friends (2 or more)" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "招待する友だち（2人以上）" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "邀请朋友（2人及以上）" } } } },
+    "단톡방 만들기" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "New Group Chat" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "グループ作成" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "创建群聊" } } } },
+    "만들기" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Create" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "作成" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "创建" } } } },
+    "⏳ 메시지는 24시간 뒤 자동으로 사라져요" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "⏳ Messages disappear after 24 hours" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "⏳ メッセージは24時間後に自動で消えます" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "⏳ 消息将在24小时后自动消失" } } } },
+    "메시지 입력" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Message" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "メッセージを入力" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "输入消息" } } } },
+    "전송 중" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Sending" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "送信中" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "发送中" } } } },
+    "실패" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Failed" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "失敗" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "失败" } } } },
+    "내 이모티콘" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "My Emoticons" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "マイスタンプ" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "我的表情" } } } },
+    "보관함이 비어있어요" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Your collection is empty" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "保管箱が空です" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "收藏夹是空的" } } } },
+    "이모티콘 탭에서 받아오거나 직접 그려보세요!" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Get some from the Emoticons tab, or draw your own!" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "スタンプタブで入手するか、自分で描いてみましょう！" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "去表情标签页领取，或自己画一个吧！" } } } },
+    "아직 이모티콘이 없어요" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "No emoticons yet" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "まだスタンプがありません" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "还没有表情" } } } },
+    "첫 이모티콘을 그려서 올려보세요!" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Draw and upload the first one!" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "最初のスタンプを描いて投稿してみましょう！" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "画一个并上传第一个表情吧！" } } } },
+    "보관함에 있음" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Owned" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "入手済み" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已拥有" } } } },
+    "받기" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Get" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "入手" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "领取" } } } },
+    "₩%lld" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "₩%lld" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "₩%lld" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "₩%lld" } } } },
+    "이름" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Name" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "名前" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "名称" } } } },
+    "예: 두근두근" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "e.g. Heartbeat" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "例: ドキドキ" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "例如：心动" } } } },
+    "가격 (원, 0 = 무료)" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Price (KRW, 0 = free)" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "価格（ウォン、0 = 無料）" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "价格（韩元，0 = 免费）" } } } },
+    "올리면 모든 사용자에게 공개되고, 누구나 채팅에서 쓸 수 있어요. 저작권은 만든 사람(나)에게 있어요." : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Uploads are public — anyone can use them in chat. You keep the copyright." } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "投稿するとすべてのユーザーに公開され、誰でもチャットで使えます。著作権は作者（あなた）にあります。" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "上传后对所有用户公开，任何人都可在聊天中使用。版权归创作者（你）所有。" } } } },
+    "갤러리에 올리기" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Upload to Gallery" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "ギャラリーに投稿" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "上传到画廊" } } } },
+    "올리기" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Upload" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "投稿" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "上传" } } } },
+    "그림 그리는 과정 재생" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Replay drawing strokes" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "描く過程を再生" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "回放绘制过程" } } } },
+    "끄면 완성된 그림만 바로 표시돼요." : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "When off, finished drawings appear instantly." } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "オフにすると完成した絵だけが表示されます。" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "关闭后将直接显示完成的图画。" } } } },
+    "메시지 보관" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Message Retention" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "メッセージ保存" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "消息保存" } } } },
+    "자동 삭제" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Auto-delete" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "自動削除" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "自动删除" } } } },
+    "안 함" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Never" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "しない" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "从不" } } } },
+    "%lld시간 후" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "After %lld hours" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "%lld時間後" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "%lld小时后" } } } },
+    "메시지는 서버에 저장되지 않으며, 이 기기에서도 위 기간이 지나면 자동으로 삭제됩니다." : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Messages are never stored on servers and are deleted from this device after the period above." } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "メッセージはサーバーに保存されず、この端末からも上記の期間後に自動削除されます。" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "消息不会存储在服务器上，超过上述期限后也会从本设备自动删除。" } } } },
+    "약관 및 정책" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Terms & Policies" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "規約とポリシー" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "条款与政策" } } } },
+    "그림 그리기" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Draw" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "お絵かき" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "画图" } } } },
+    "그리는 과정 재생" : { "localizations" : {
+      "en" : { "stringUnit" : { "state" : "translated", "value" : "Replay drawing" } },
+      "ja" : { "stringUnit" : { "state" : "translated", "value" : "描く過程を再生" } },
+      "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "回放绘制" } } } }
+  }
+}

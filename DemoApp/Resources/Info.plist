@@ -20,10 +20,19 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>UILaunchScreen</key>
 	<dict/>
+	<!-- 세로 모드 전용 (메신저 UX 표준 — 가로모드 비활성) -->
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+	</array>
+	<!-- iPad에서 세로 고정을 허용받으려면 전체화면 선언 필요 (멀티태스킹 미지원) -->
+	<key>UIRequiresFullScreen</key>
+	<true/>
 
 	<!-- 연락처 권한: 친구 찾기 시점에만 요청됨 -->
 	<key>NSContactsUsageDescription</key>

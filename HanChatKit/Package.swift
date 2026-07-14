@@ -21,7 +21,8 @@ let package = Package(
     targets: [
         .target(
             name: "HanChatCore",
-            dependencies: []
+            dependencies: [],
+            resources: [.process("Resources")]  // 에러 메시지 다국어 카탈로그
         ),
         .target(
             name: "HanChatData",
