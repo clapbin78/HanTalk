@@ -1,0 +1,30 @@
+# hanchat — 어떤 Flutter 앱에도 붙는 채팅 SDK (pub.dev 배포 대상)
+# 24시간 뒤 사라지는 메시지 · 그리는 과정이 재생되는 그림/이모티콘 · 인라인 번역
+name: hanchat
+description: >-
+  Ephemeral chat SDK with replayable vector drawings and an emoticon gallery.
+  Clean Architecture + MVVM. Server is a mailbox, not a database.
+version: 0.1.0
+repository: https://github.com/clapbin78/HanTalk
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+  flutter: ">=3.19.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # 전화번호 해시 (SHA-256) — 원본 번호는 서버로 가지 않는다
+  crypto: ^3.0.3
+  # 로컬 저장 (SwiftData 대체) — Phase: data 레이어에서 사용
+  sqflite: ^2.3.0
+  path: ^1.9.0
+  # 설정값 (그리기 재생 토글 등)
+  shared_preferences: ^2.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter: {}
