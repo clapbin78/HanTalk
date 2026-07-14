@@ -84,6 +84,16 @@ class FriendsViewModel extends ChangeNotifier {
     if (me == null) return null;
     return _client.createRoom.direct(friendId: friend.id, myId: me.id);
   }
+
+  Future<void> block(String id) async {
+    await _client.manageFriends.block(id);
+    await load();
+  }
+
+  Future<void> hide(String id) async {
+    await _client.manageFriends.hide(id);
+    await load();
+  }
 }
 
 class FriendsPage extends StatefulWidget {
@@ -164,6 +174,8 @@ class _FriendsPageState extends State<FriendsPage> {
                               builder: (_) => ChatRoomPage(room: room)));
                         }
                       },
+                      // 꾹 누르면 차단/삭제 (복원은 설정 → 친구 관리)
+                      onLongPress: () => _showFriendActions(friend, l10n),
                     ),
                 ]),
         );
@@ -174,6 +186,39 @@ class _FriendsPageState extends State<FriendsPage> {
   Future<void> _sync(ContactSyncMode mode) async {
     final showSheet = await _vm.syncContacts(mode);
     if (showSheet && mounted) _showCandidateSheet();
+  }
+
+  void _showFriendActions(Friend friend, HanChatL10n l10n) {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          ListTile(
+            leading: const Icon(Icons.person_off),
+            title: Text(friend.displayName,
+                style: const TextStyle(fontWeight: FontWeight.bold)),
+          ),
+          const Divider(height: 1),
+          ListTile(
+            leading: const Icon(Icons.block, color: Colors.red),
+            title: Text(l10n.t('friend.block'),
+                style: const TextStyle(color: Colors.red)),
+            onTap: () {
+              Navigator.of(sheetContext).pop();
+              _vm.block(friend.id);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.delete_outline),
+            title: Text(l10n.t('friend.hide')),
+            onTap: () {
+              Navigator.of(sheetContext).pop();
+              _vm.hide(friend.id);
+            },
+          ),
+        ]),
+      ),
+    );
   }
 
   void _showCandidateSheet() {

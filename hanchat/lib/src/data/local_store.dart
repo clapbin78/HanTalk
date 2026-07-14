@@ -19,9 +19,16 @@ class LocalStore {
     final db = await f.openDatabase(
       path,
       options: OpenDatabaseOptions(
-        version: 1,
+        version: 2,
         // 같은 경로 재사용 시 인스턴스 공유 방지 (테스트 격리 + 명시적 수명 관리)
         singleInstance: false,
+        onUpgrade: (db, oldVersion, _) async {
+          if (oldVersion < 2) {
+            // v2: 친구 상태(active/hidden/blocked) 추가
+            await db.execute(
+                "ALTER TABLE friends ADD COLUMN status TEXT NOT NULL DEFAULT 'active'");
+          }
+        },
         onCreate: (db, _) async {
           await db.execute('''
             CREATE TABLE users (
@@ -31,7 +38,8 @@ class LocalStore {
           await db.execute('''
             CREATE TABLE friends (
               id TEXT PRIMARY KEY, nickname TEXT NOT NULL,
-              local_name TEXT, added_at TEXT NOT NULL
+              local_name TEXT, added_at TEXT NOT NULL,
+              status TEXT NOT NULL DEFAULT 'active'
             )''');
           await db.execute('''
             CREATE TABLE rooms (
@@ -85,38 +93,67 @@ class LocalStore {
 
   // ── Friends ───────────────────────────────────────────
 
+  Friend _rowToFriend(Map<String, Object?> r) => Friend(
+        id: r['id'] as String,
+        nickname: r['nickname'] as String,
+        localName: r['local_name'] as String?,
+        addedAt: DateTime.parse(r['added_at'] as String),
+        status: FriendStatus.values
+            .byName((r['status'] as String?) ?? 'active'),
+      );
+
+  /// 활성 친구만 (목록 표시용).
   Future<List<Friend>> friends() async {
-    final rows = await _db.query('friends', orderBy: 'added_at');
-    return [
-      for (final r in rows)
-        Friend(
-          id: r['id'] as String,
-          nickname: r['nickname'] as String,
-          localName: r['local_name'] as String?,
-          addedAt: DateTime.parse(r['added_at'] as String),
-        ),
-    ];
+    final rows = await _db.query('friends',
+        where: 'status = ?', whereArgs: ['active'], orderBy: 'added_at');
+    return rows.map(_rowToFriend).toList();
   }
 
+  /// 삭제·차단된 친구 (관리 화면용).
+  Future<List<Friend>> managedFriends() async {
+    final rows = await _db.query('friends',
+        where: 'status != ?', whereArgs: ['active'], orderBy: 'added_at');
+    return rows.map(_rowToFriend).toList();
+  }
+
+  Future<FriendStatus?> friendStatus(String id) async {
+    final rows = await _db.query('friends',
+        columns: ['status'], where: 'id = ?', whereArgs: [id], limit: 1);
+    if (rows.isEmpty) return null;
+    return FriendStatus.values.byName(rows.first['status'] as String);
+  }
+
+  Future<void> setFriendStatus(String id, FriendStatus status) => _db.update(
+        'friends',
+        {'status': status.name},
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+
+  /// 이미 있는 친구는 닉네임/연락처명만 갱신하고 상태는 유지한다
+  /// (재동기화가 차단/삭제 상태를 되돌리지 않도록).
   Future<void> upsertFriends(List<Friend> newFriends) async {
-    final batch = _db.batch();
     for (final f in newFriends) {
-      batch.insert(
+      final updated = await _db.update(
         'friends',
         {
+          'nickname': f.nickname,
+          if (f.localName != null) 'local_name': f.localName,
+        },
+        where: 'id = ?',
+        whereArgs: [f.id],
+      );
+      if (updated == 0) {
+        await _db.insert('friends', {
           'id': f.id,
           'nickname': f.nickname,
           'local_name': f.localName,
           'added_at': f.addedAt.toIso8601String(),
-        },
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
+          'status': f.status.name,
+        });
+      }
     }
-    await batch.commit(noResult: true);
   }
-
-  Future<void> removeFriend(String id) =>
-      _db.delete('friends', where: 'id = ?', whereArgs: [id]);
 
   // ── Rooms ─────────────────────────────────────────────
 

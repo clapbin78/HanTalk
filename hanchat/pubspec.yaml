@@ -21,8 +21,9 @@ dependencies:
   path: ^1.9.0
   # 설정값 (그리기 재생 토글 등)
   shared_preferences: ^2.2.0
-  # 온보딩: 약관 웹뷰, 알림 권한, 연락처 친구찾기
-  url_launcher: ^6.3.0
+  # 약관 인앱 웹뷰 (iOS=WKWebView, Android=WebView — 주소창 미노출)
+  webview_flutter: ^4.9.0
+  # 온보딩: 알림 권한, 연락처 친구찾기
   permission_handler: ^11.3.0
   # 1.x는 최신 Flutter(Scene 기반)에서 앱 시작 크래시 → 2.x 필수
   flutter_contacts: ^2.2.2

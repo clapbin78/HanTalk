@@ -41,6 +41,24 @@ class GetFriendsUseCase {
   Future<List<Friend>> call() => _friends.friends();
 }
 
+/// 친구 차단/삭제/복원 관리.
+class ManageFriendsUseCase {
+  final FriendRepository _friends;
+  const ManageFriendsUseCase(this._friends);
+
+  /// 차단: 목록에서 숨기고, 이후 이 사람이 보내는 메시지는 수신 시점에 버려진다.
+  Future<void> block(String id) => _friends.setStatus(id, FriendStatus.blocked);
+
+  /// 삭제: 목록에서만 숨김 (메시지 수신은 유지 — 문자 감성).
+  Future<void> hide(String id) => _friends.setStatus(id, FriendStatus.hidden);
+
+  /// 복원: 다시 활성 친구로.
+  Future<void> restore(String id) => _friends.setStatus(id, FriendStatus.active);
+
+  /// 차단/삭제된 친구 목록 (관리 화면).
+  Future<List<Friend>> managed() => _friends.managedFriends();
+}
+
 class CreateChatRoomUseCase {
   final ChatRoomRepository _rooms;
   const CreateChatRoomUseCase(this._rooms);

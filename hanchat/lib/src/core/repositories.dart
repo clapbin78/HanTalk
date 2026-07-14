@@ -11,8 +11,15 @@ abstract interface class FriendRepository {
   /// 연락처를 서버 가입자와 대조해 친구 후보 반환 (아직 등록 아님).
   Future<List<FriendCandidate>> findCandidates(List<DeviceContact> contacts);
   Future<List<Friend>> addFriends(List<FriendCandidate> candidates);
+
+  /// 활성(active) 친구만.
   Future<List<Friend>> friends();
-  Future<void> removeFriend(String id);
+
+  /// 삭제(hidden)·차단(blocked)된 친구 — 관리 화면용.
+  Future<List<Friend>> managedFriends();
+
+  /// 차단/삭제/복원. (차단은 SyncEngine이 수신 시점에 확인해 메시지를 버린다)
+  Future<void> setStatus(String id, FriendStatus status);
 }
 
 abstract interface class ChatRoomRepository {

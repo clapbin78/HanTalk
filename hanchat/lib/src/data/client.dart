@@ -95,6 +95,7 @@ class HanChatClient {
   final GetCurrentUserUseCase getCurrentUser;
   final SyncContactsUseCase syncContacts;
   final GetFriendsUseCase getFriends;
+  final ManageFriendsUseCase manageFriends;
   final CreateChatRoomUseCase createRoom;
   final ObserveChatRoomsUseCase observeRooms;
   final SendMessageUseCase sendMessage;
@@ -130,6 +131,7 @@ class HanChatClient {
         getCurrentUser = GetCurrentUserUseCase(userRepository),
         syncContacts = SyncContactsUseCase(friendRepository),
         getFriends = GetFriendsUseCase(friendRepository),
+        manageFriends = ManageFriendsUseCase(friendRepository),
         createRoom = CreateChatRoomUseCase(roomRepository),
         observeRooms = ObserveChatRoomsUseCase(roomRepository),
         sendMessage = SendMessageUseCase(messageRepository),

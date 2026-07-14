@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../core/entities.dart';
 import '../data/client.dart';
 import 'drawing.dart';
+import 'friend_manage_page.dart';
 import 'l10n.dart';
+import 'policy_web_page.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -43,6 +44,12 @@ class _SettingsPageState extends State<SettingsPage> {
           title: Text(l10n.t('nickname')),
           trailing: Text(_me?.nickname ?? ''),
         ),
+        ListTile(
+          title: Text(l10n.t('friend.manage')),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(
+              builder: (_) => const FriendManagePage())),
+        ),
         _sectionHeader(l10n.t('settings.chat')),
         SwitchListTile(
           title: Text(l10n.t('settings.replay')),
@@ -74,14 +81,16 @@ class _SettingsPageState extends State<SettingsPage> {
           ListTile(
             title: Text(l10n.t('terms')),
             trailing: const Icon(Icons.chevron_right),
-            onTap: () => launchUrl(_config.termsOfServiceUrl!,
-                mode: LaunchMode.inAppBrowserView),
+            onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(
+                builder: (_) => PolicyWebPage(
+                    title: l10n.t('terms'), url: _config.termsOfServiceUrl!))),
           ),
           ListTile(
             title: Text(l10n.t('privacy')),
             trailing: const Icon(Icons.chevron_right),
-            onTap: () => launchUrl(_config.privacyPolicyUrl!,
-                mode: LaunchMode.inAppBrowserView),
+            onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(
+                builder: (_) => PolicyWebPage(
+                    title: l10n.t('privacy'), url: _config.privacyPolicyUrl!))),
           ),
         ],
       ]),

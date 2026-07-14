@@ -149,6 +149,64 @@ void main() {
     expect(friends.single.displayName, '철수형');
   });
 
+  test('친구 차단/삭제/복원 + 차단 상대 메시지 드롭', () async {
+    final transport = InMemoryChatTransport(
+      seedFakeUsers: [(nickname: '김철수', phoneNumber: '010-1111-2222')],
+      botEnabled: false,
+    );
+    final client = await makeClient(transport);
+    final me = await client.registerUser(nickname: '나', phoneNumber: '01099998888');
+
+    // 친구 등록
+    final candidates = await client.syncContacts.findCandidates(
+        [const DeviceContact(name: '철수', phoneNumbers: ['010-1111-2222'])]);
+    await client.syncContacts.register(candidates);
+    final friend = (await client.getFriends()).single;
+
+    // 삭제(hidden) → 목록에서 사라지고 관리 목록에 등장
+    await client.manageFriends.hide(friend.id);
+    expect(await client.getFriends(), isEmpty);
+    expect((await client.manageFriends.managed()).single.status, FriendStatus.hidden);
+
+    // 복원 → 다시 목록에
+    await client.manageFriends.restore(friend.id);
+    expect((await client.getFriends()).single.id, friend.id);
+
+    // 차단 → 그 상대가 보낸 메시지는 저장되지 않고 서버에서만 삭제됨
+    await client.manageFriends.block(friend.id);
+    await client.start();
+
+    final room = ChatRoom(
+      id: 'blocked-room',
+      kind: RoomKind.direct,
+      memberIds: [friend.id, me.id],
+      createdAt: DateTime.now(),
+    );
+    await transport.send(
+      TransportEnvelope(
+        message: Message(
+          id: 'blocked-1',
+          roomId: room.id,
+          senderId: friend.id,
+          content: const TextContent('차단됐는데 보내봄'),
+          sentAt: DateTime.now(),
+        ),
+        room: room,
+        sender: User(
+            id: friend.id,
+            nickname: '김철수',
+            phoneNumberHash: 'h',
+            createdAt: DateTime.now()),
+      ),
+      recipientIds: [me.id],
+    );
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+
+    expect(await client.messageRepository.messages(room.id), isEmpty,
+        reason: '차단한 상대의 메시지는 저장되지 않아야 함');
+    await client.stop();
+  });
+
   test('이모티콘 보관함: sqlite 저장 + 중복 방지', () async {
     final client = await makeClient(InMemoryChatTransport(botEnabled: false));
     await client.registerUser(nickname: '나', phoneNumber: '01011112222');

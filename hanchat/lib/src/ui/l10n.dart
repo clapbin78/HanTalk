@@ -153,6 +153,14 @@ class HanChatL10n {
     'settings.policies': ['약관 및 정책', 'Terms & Policies', '規約とポリシー', '条款与政策'],
     // 그림판
     'draw.title': ['그림 그리기', 'Draw', 'お絵かき', '画图'],
+    // 친구 차단/삭제 관리
+    'friend.block': ['차단', 'Block', 'ブロック', '拉黑'],
+    'friend.hide': ['삭제', 'Delete', '削除', '删除'],
+    'friend.restore': ['복원', 'Restore', '復元', '恢复'],
+    'friend.manage': ['차단·삭제 친구 관리', 'Blocked & Deleted Friends', 'ブロック・削除した友だち', '拉黑与已删除的朋友'],
+    'friend.blockedSection': ['차단한 친구', 'Blocked', 'ブロック中', '已拉黑'],
+    'friend.hiddenSection': ['삭제한 친구', 'Deleted', '削除済み', '已删除'],
+    'friend.manageEmpty': ['차단하거나 삭제한 친구가 없어요.', 'No blocked or deleted friends.', 'ブロック・削除した友だちはいません。', '没有拉黑或删除的朋友。'],
     // 꾹 누르기 메뉴
     'menu.copy': ['복사', 'Copy', 'コピー', '复制'],
     'menu.forward': ['전달', 'Forward', '転送', '转发'],

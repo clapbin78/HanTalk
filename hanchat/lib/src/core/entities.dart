@@ -32,18 +32,26 @@ class User {
       );
 }
 
+/// 친구 상태.
+/// - active: 정상 (친구 목록 표시)
+/// - hidden: 삭제됨 (목록에서 숨김, 메시지 수신은 됨 — 관리 화면에서 복원 가능)
+/// - blocked: 차단됨 (목록 숨김 + 메시지 수신 차단 — 복원 가능)
+enum FriendStatus { active, hidden, blocked }
+
 /// 내 친구 목록에 등록된 상대.
 class Friend {
   final String id; // 상대 User.id
   final String nickname; // 서버 닉네임
   final String? localName; // 내 연락처에 저장된 이름 (우선 표시)
   final DateTime addedAt;
+  final FriendStatus status;
 
   const Friend({
     required this.id,
     required this.nickname,
     this.localName,
     required this.addedAt,
+    this.status = FriendStatus.active,
   });
 
   String get displayName => localName ?? nickname;

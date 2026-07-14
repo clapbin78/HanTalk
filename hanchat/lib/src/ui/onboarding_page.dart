@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../data/client.dart';
 import 'l10n.dart';
+import 'policy_web_page.dart';
 import 'theme.dart';
 
 /// 최초 설치 플로우: 접근권한 안내(한국 정보통신망법, 전 지역 공통) →
@@ -139,8 +139,8 @@ class _ConsentStepState extends State<_ConsentStep> {
             ),
             if (url != null)
               TextButton(
-                onPressed: () =>
-                    launchUrl(url, mode: LaunchMode.inAppBrowserView),
+                onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
+                    builder: (_) => PolicyWebPage(title: title, url: url))),
                 child: Text(l10n.t('onboard.view')),
               ),
           ]),

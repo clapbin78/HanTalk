@@ -105,8 +105,11 @@ class DefaultFriendRepository implements FriendRepository {
   Future<List<Friend>> friends() => _store.friends();
 
   @override
-  Future<void> removeFriend(String id) async {
-    await _store.removeFriend(id);
+  Future<List<Friend>> managedFriends() => _store.managedFriends();
+
+  @override
+  Future<void> setStatus(String id, FriendStatus status) async {
+    await _store.setFriendStatus(id, status);
     _notifier.notify('friends');
   }
 }

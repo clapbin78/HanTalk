@@ -52,3 +52,8 @@ iOS 네이티브(Swift) → **Flutter**로 전환됨. Swift 코드는 `ios-nativ
 - 규제: COMPLIANCE.md (EU 기준선, 4개국 출시: 미국→유럽→한국→일본)
 - 약관/개인정보 문서는 앱 소유 (docs/ → clapbin78.github.io/HanTalk)
 - 세로 모드 전용, iPhone/iPad/Android 폰·태블릿
+- 웹뷰는 항상 인앱(webview_flutter — WKWebView/Android WebView, 주소창 미노출)
+- **메시지 수정/삭제/취소 없음** = 제품 결정(문자 감성). 나중에 추가할 땐:
+  MessageContent(sealed)에 Control 케이스 추가 → SyncEngine에서 분기 → UI 반영 순.
+  현재 구조가 이 확장을 전제로 설계돼 있음 (봉투 프로토콜·sealed class)
+- 기기 설치·체험은 `flutter run --release`, 개발(핫리로드)은 debug+F5

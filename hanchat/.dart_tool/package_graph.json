@@ -17,7 +17,7 @@
         "share_plus",
         "shared_preferences",
         "sqflite",
-        "url_launcher"
+        "webview_flutter"
       ],
       "devDependencies": [
         "flutter_lints",
@@ -117,17 +117,13 @@
       ]
     },
     {
-      "name": "url_launcher",
-      "version": "6.3.2",
+      "name": "webview_flutter",
+      "version": "4.14.1",
       "dependencies": [
         "flutter",
-        "url_launcher_android",
-        "url_launcher_ios",
-        "url_launcher_linux",
-        "url_launcher_macos",
-        "url_launcher_platform_interface",
-        "url_launcher_web",
-        "url_launcher_windows"
+        "webview_flutter_android",
+        "webview_flutter_platform_interface",
+        "webview_flutter_wkwebview"
       ]
     },
     {
@@ -436,28 +432,31 @@
       ]
     },
     {
-      "name": "url_launcher_macos",
-      "version": "3.2.5",
-      "dependencies": [
-        "flutter",
-        "url_launcher_platform_interface"
-      ]
-    },
-    {
-      "name": "url_launcher_ios",
-      "version": "6.4.1",
-      "dependencies": [
-        "flutter",
-        "url_launcher_platform_interface"
-      ]
-    },
-    {
-      "name": "url_launcher_android",
-      "version": "6.3.32",
+      "name": "webview_flutter_wkwebview",
+      "version": "3.26.0",
       "dependencies": [
         "flutter",
         "meta",
-        "url_launcher_platform_interface"
+        "path",
+        "webview_flutter_platform_interface"
+      ]
+    },
+    {
+      "name": "webview_flutter_platform_interface",
+      "version": "2.15.1",
+      "dependencies": [
+        "flutter",
+        "meta",
+        "plugin_platform_interface"
+      ]
+    },
+    {
+      "name": "webview_flutter_android",
+      "version": "4.13.0",
+      "dependencies": [
+        "flutter",
+        "meta",
+        "webview_flutter_platform_interface"
       ]
     },
     {

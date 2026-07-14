@@ -19,6 +19,13 @@ class MessageSyncEngine {
     if (_subscription != null) return;
     _subscription = _transport.incoming(userId).listen((envelope) async {
       try {
+        // 차단한 상대의 메시지는 저장하지 않고 서버에서만 지운다
+        final senderStatus = await _store.friendStatus(envelope.sender.id);
+        if (senderStatus == FriendStatus.blocked) {
+          await _transport.acknowledge(envelopeId: envelope.id, userId: userId);
+          return;
+        }
+
         // 방이 없으면 생성 (초대받은 단톡방, 새 1:1 등)
         await _store.upsertRoom(envelope.room);
 
