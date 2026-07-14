@@ -21,6 +21,13 @@ dependencies:
   path: ^1.9.0
   # 설정값 (그리기 재생 토글 등)
   shared_preferences: ^2.2.0
+  # 온보딩: 약관 웹뷰, 알림 권한, 연락처 친구찾기
+  url_launcher: ^6.3.0
+  permission_handler: ^11.3.0
+  flutter_contacts: ^1.1.9
+  # 인라인 번역 (온디바이스, 무료 — 커스텀 TranslationService 주입 시 미사용)
+  google_mlkit_translation: ^0.11.0
+  google_mlkit_language_id: ^0.11.0
 
 dev_dependencies:
   flutter_test:

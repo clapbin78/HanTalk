@@ -1,0 +1,28 @@
+# 한톡 — 껍데기 앱 (hanchat SDK 사용법 시연이 곧 이 앱)
+name: hantalk
+description: "24시간 뒤 사라지는 메신저, 한톡"
+publish_to: "none"
+version: 0.1.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  hanchat:
+    path: ../hanchat
+  # Firebase 모드 전환 시 주석 해제 (firebase/README.md 참고 — us-central1 리전!)
+  # hanchat_firebase:
+  #   path: ../hanchat_firebase
+  # firebase_core: ^3.6.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true

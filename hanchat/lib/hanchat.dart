@@ -19,3 +19,10 @@ export 'src/data/in_memory_transport.dart';
 export 'src/data/emoticon_store.dart';
 export 'src/data/phone_number_hasher.dart';
 export 'src/data/client.dart';
+
+// UI — 완성형 채팅 화면
+export 'src/ui/root.dart';
+export 'src/ui/theme.dart';
+export 'src/ui/l10n.dart';
+export 'src/ui/translatable_text.dart';
+export 'src/ui/drawing.dart' show DrawingReplaySetting, DrawingReplayView, DrawingThumbnail;
