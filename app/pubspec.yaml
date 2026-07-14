@@ -26,3 +26,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  # ML Kit·flutter_contacts가 아직 SPM 미지원 → 이 앱은 CocoaPods 방식 고정
+  config:
+    enable-swift-package-manager: false

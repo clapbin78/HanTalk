@@ -5,6 +5,9 @@ name: hanchat_firebase
 description: Firebase (Firestore) transport and emoticon gallery for the hanchat SDK.
 version: 0.1.0
 repository: https://github.com/clapbin78/HanTalk
+# 개발 중엔 hanchat을 path로 참조 → pub.dev 배포 시점에 hosted 버전(^0.1.0)으로
+# 바꾸고 이 줄을 제거한다.
+publish_to: none
 
 environment:
   sdk: ">=3.3.0 <4.0.0"
