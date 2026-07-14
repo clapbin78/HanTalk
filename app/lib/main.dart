@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -24,12 +26,22 @@ Future<void> main() async {
   // await Firebase.initializeApp();
   // final transport = FirebaseChatTransport(); // retention: ServerRetention.retain(days: 3) 옵션
 
+  // 기기 언어에 맞는 정책 페이지 선택 (ko 기본, en/ja/zh 지원)
+  final lang = PlatformDispatcher.instance.locale.languageCode;
+  final suffix = switch (lang) {
+    'en' => '.en',
+    'ja' => '.ja',
+    'zh' => '.zh',
+    _ => '', // 한국어(기본)
+  };
+  const base = 'https://clapbin78.github.io/HanTalk';
+
   await HanChat.configure(HanChatConfig(
     transport: transport,
     localRetention: RetentionPolicy.oneDay, // 기기 저장 메시지 24시간 자동삭제
-    // 약관은 껍데기 앱 소유 (docs/ → GitHub Pages). SDK엔 URL만 주입.
-    privacyPolicyUrl: Uri.parse('https://clapbin78.github.io/HanTalk/privacy.html'),
-    termsOfServiceUrl: Uri.parse('https://clapbin78.github.io/HanTalk/terms.html'),
+    // 약관은 껍데기 앱 소유 (docs/ → GitHub Pages). 기기 언어별 페이지 주입.
+    privacyPolicyUrl: Uri.parse('$base/privacy$suffix.html'),
+    termsOfServiceUrl: Uri.parse('$base/terms$suffix.html'),
     serviceName: '한톡',
     appId: 'com.hantalk.app', // 임티샵 옵션 결제 확인용 식별자 (서버 licenses/{appId})
     // 🚩 숨겨진 기능들 (구조·테스트 완비, 때가 되면 켜기만):
