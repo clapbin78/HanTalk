@@ -8,13 +8,16 @@ class MLKitTranslator {
   MLKitTranslator._();
   static final instance = MLKitTranslator._();
 
-  final _languageId = LanguageIdentifier(confidenceThreshold: 0.4);
+  final _languageId = LanguageIdentifier(confidenceThreshold: 0.3);
   final _modelManager = OnDeviceTranslatorModelManager();
 
   Future<String?> translate(String text, {required String toLanguageCode}) async {
     try {
-      final sourceCode = await _languageId.identifyLanguage(text);
-      if (sourceCode == 'und') return null;
+      var sourceCode = await _languageId.identifyLanguage(text);
+      if (sourceCode == 'und') {
+        // 짧은 문장은 감지 실패가 잦음 → 문자 기반 폴백
+        sourceCode = _guessByScript(text);
+      }
 
       final source = _language(sourceCode);
       final target = _language(toLanguageCode);
@@ -37,6 +40,13 @@ class MLKitTranslator {
     } catch (_) {
       return null;
     }
+  }
+
+  String _guessByScript(String text) {
+    if (RegExp(r'[가-힣]').hasMatch(text)) return 'ko';
+    if (RegExp(r'[぀-ヿ]').hasMatch(text)) return 'ja'; // 가나
+    if (RegExp(r'[一-鿿]').hasMatch(text)) return 'zh'; // 한자
+    return 'en';
   }
 
   TranslateLanguage? _language(String code) {

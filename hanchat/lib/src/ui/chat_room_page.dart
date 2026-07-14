@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../core/entities.dart';
 import '../data/client.dart';
@@ -68,6 +70,30 @@ class ChatRoomViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// 전달 대상 방 목록 (현재 방 제외)
+  Future<List<ChatRoom>> forwardTargets() async {
+    final all = await _client.observeRooms().first;
+    return [for (final r in all) if (r.id != room.id) r];
+  }
+
+  Future<void> forwardTo(String targetRoomId, MessageContent content) async {
+    try {
+      await _client.sendMessage(content, roomId: targetRoomId);
+    } catch (e) {
+      errorKey = e.toString();
+      notifyListeners();
+    }
+  }
+
+  String roomTitle(ChatRoom target, HanChatL10n l10n) {
+    if (target.kind == RoomKind.group) return target.name ?? l10n.t('chats.group');
+    final otherId = target.memberIds.where((id) => id != myId).firstOrNull;
+    for (final f in friends) {
+      if (f.id == otherId) return f.displayName;
+    }
+    return l10n.t('unknown');
+  }
+
   Future<void> _loadAISuggestions() async {
     try {
       aiSuggestions = await _client.suggestReplies(
@@ -98,12 +124,26 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   late final _vm = ChatRoomViewModel(HanChat.client, widget.room)..start();
   final _input = TextEditingController();
   final _scroll = ScrollController();
+  final _inputFocus = FocusNode();
+  bool _showCanvas = false; // 인라인 그림판 (키보드 자리)
+
+  @override
+  void initState() {
+    super.initState();
+    // 입력창에 포커스 오면(키보드 올라오면) 그림판은 접는다
+    _inputFocus.addListener(() {
+      if (_inputFocus.hasFocus && _showCanvas) {
+        setState(() => _showCanvas = false);
+      }
+    });
+  }
 
   @override
   void dispose() {
     _vm.dispose();
     _input.dispose();
     _scroll.dispose();
+    _inputFocus.dispose();
     super.dispose();
   }
 
@@ -130,24 +170,49 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                     style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
               ),
               Expanded(
-                child: ListView.builder(
-                  controller: _scroll,
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  itemCount: _vm.messages.length,
-                  itemBuilder: (context, index) {
-                    final message = _vm.messages[index];
-                    return _MessageBubble(
-                      message: message,
-                      isMine: message.senderId == _vm.myId,
-                      senderName: widget.room.kind == RoomKind.group &&
-                              message.senderId != _vm.myId
-                          ? _vm.senderName(message, l10n)
-                          : null,
-                    );
+                // 바탕 아무데나 탭 → 키보드/그림판 내리기
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    FocusManager.instance.primaryFocus?.unfocus();
+                    if (_showCanvas) setState(() => _showCanvas = false);
                   },
+                  child: ListView.builder(
+                    controller: _scroll,
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag, // 스크롤로도 내려감
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    itemCount: _vm.messages.length,
+                    itemBuilder: (context, index) {
+                      final message = _vm.messages[index];
+                      return _MessageBubble(
+                        message: message,
+                        isMine: message.senderId == _vm.myId,
+                        senderName: widget.room.kind == RoomKind.group &&
+                                message.senderId != _vm.myId
+                            ? _vm.senderName(message, l10n)
+                            : null,
+                        onForward: _forward,
+                      );
+                    },
+                  ),
                 ),
               ),
               _inputBar(l10n),
+              // 인라인 미니 그림판 — 키보드 자리처럼 입력창 아래에서 펼쳐짐 (화면 절반까지)
+              if (_showCanvas)
+                SizedBox(
+                  height: (MediaQuery.of(context).size.height * 0.45)
+                      .clamp(220.0, 420.0),
+                  child: MiniDrawingPanel(
+                    onSend: (payload) {
+                      setState(() => _showCanvas = false);
+                      _vm.sendDrawing(payload);
+                    },
+                    onClose: () => setState(() => _showCanvas = false),
+                  ),
+                ),
             ]),
           ),
         );
@@ -177,13 +242,11 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
           ),
         Row(children: [
           IconButton(
-            icon: const Icon(Icons.brush),
-            onPressed: () async {
-              final payload = await Navigator.of(context).push<DrawingPayload>(
-                MaterialPageRoute(
-                    builder: (_) => const DrawingCanvasPage(), fullscreenDialog: true),
-              );
-              if (payload != null) await _vm.sendDrawing(payload);
+            icon: Icon(_showCanvas ? Icons.keyboard : Icons.brush),
+            onPressed: () {
+              // 키보드 ↔ 그림판 전환 (키보드는 내려가고 그 자리에 그림판)
+              FocusManager.instance.primaryFocus?.unfocus();
+              setState(() => _showCanvas = !_showCanvas);
             },
           ),
           IconButton(
@@ -193,6 +256,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
           Expanded(
             child: TextField(
               controller: _input,
+              focusNode: _inputFocus,
               minLines: 1,
               maxLines: 4,
               decoration: InputDecoration(
@@ -271,14 +335,56 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     );
   }
 
+  /// 전달: 방 선택 시트 → 선택한 방으로 같은 내용 전송
+  Future<void> _forward(MessageContent content) async {
+    final targets = await _vm.forwardTargets();
+    if (!mounted) return;
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (sheetContext) {
+        final l10n = HanChatL10n.of(sheetContext);
+        return SafeArea(
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Padding(
+              padding: const EdgeInsets.all(14),
+              child: Text(l10n.t('forward.title'),
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
+            ),
+            Flexible(
+              child: ListView(shrinkWrap: true, children: [
+                for (final target in targets)
+                  ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: Colors.grey.shade300,
+                      child: Text(_vm.roomTitle(target, l10n).characters.first,
+                          style: const TextStyle(color: Colors.black54)),
+                    ),
+                    title: Text(_vm.roomTitle(target, l10n)),
+                    onTap: () {
+                      Navigator.of(sheetContext).pop();
+                      _vm.forwardTo(target.id, content);
+                    },
+                  ),
+              ]),
+            ),
+          ]),
+        );
+      },
+    );
+  }
+
   void _maybeShowError(HanChatL10n l10n) {
     final key = _vm.errorKey;
     if (key == null) return;
     _vm.errorKey = null;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(l10n.t(key))));
+      // floating: 입력창을 가리지 않게 띄움
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(l10n.t(key)),
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 2),
+      ));
     });
   }
 
@@ -295,11 +401,13 @@ class _MessageBubble extends StatelessWidget {
   final Message message;
   final bool isMine;
   final String? senderName;
+  final void Function(MessageContent) onForward;
 
   const _MessageBubble({
     required this.message,
     required this.isMine,
     this.senderName,
+    required this.onForward,
   });
 
   @override
@@ -314,22 +422,54 @@ class _MessageBubble extends StatelessWidget {
             color: isMine ? theme.myBubble : theme.otherBubble,
             borderRadius: BorderRadius.circular(16),
           ),
-          child: TranslatableText(text,
-              style: const TextStyle(color: Colors.black87)),
-        ),
-      DrawingContent(payload: final payload) => Container(
-          width: 200,
-          height: 200,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.grey.shade300),
+          // 꾹 누르면: 번역 · 복사 · 전달 · 공유
+          child: TranslatableText(
+            text,
+            style: const TextStyle(color: Colors.black87),
+            extraActions: [
+              TextMenuAction(
+                icon: Icons.copy,
+                label: l10n.t('menu.copy'),
+                onTap: () {
+                  Clipboard.setData(ClipboardData(text: text));
+                  ScaffoldMessenger.maybeOf(context)?.showSnackBar(SnackBar(
+                    content: Text(l10n.t('copied')),
+                    behavior: SnackBarBehavior.floating,
+                    duration: const Duration(seconds: 1),
+                  ));
+                },
+              ),
+              TextMenuAction(
+                icon: Icons.reply,
+                label: l10n.t('menu.forward'),
+                onTap: () => onForward(message.content),
+              ),
+              TextMenuAction(
+                icon: Icons.ios_share,
+                label: l10n.t('menu.share'),
+                onTap: () => Share.share(text),
+              ),
+            ],
           ),
-          clipBehavior: Clip.antiAlias,
-          child: DrawingReplayView(payload),
         ),
-      EmoticonContent(payload: final payload) =>
-        SizedBox(width: 140, height: 140, child: DrawingReplayView(payload)),
+      DrawingContent(payload: final payload) => _forwardable(
+          l10n,
+          Container(
+            width: 200,
+            height: 200,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: DrawingReplayView(payload),
+          ),
+        ),
+      EmoticonContent(payload: final payload) => _forwardable(
+          l10n,
+          SizedBox(width: 140, height: 140, child: DrawingReplayView(payload)),
+        ),
     };
 
     final meta = Column(
@@ -352,6 +492,7 @@ class _MessageBubble extends StatelessWidget {
       child: Row(
         mainAxisAlignment:
             isMine ? MainAxisAlignment.end : MainAxisAlignment.start,
+        // (아래는 기존 레이아웃 그대로)
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (isMine) ...[meta, const SizedBox(width: 6)],
@@ -376,5 +517,33 @@ class _MessageBubble extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  /// 그림/이모티콘 말풍선: 꾹 누르면 전달 메뉴
+  Widget _forwardable(HanChatL10n l10n, Widget child) {
+    return Builder(builder: (context) {
+      return GestureDetector(
+        onLongPressStart: (details) async {
+          final position = details.globalPosition;
+          final action = await showMenu<String>(
+            context: context,
+            position:
+                RelativeRect.fromLTRB(position.dx, position.dy, position.dx, 0),
+            items: [
+              PopupMenuItem(
+                value: 'forward',
+                child: Row(children: [
+                  const Icon(Icons.reply, size: 18),
+                  const SizedBox(width: 8),
+                  Text(l10n.t('menu.forward')),
+                ]),
+              ),
+            ],
+          );
+          if (action == 'forward') onForward(message.content);
+        },
+        child: child,
+      );
+    });
   }
 }

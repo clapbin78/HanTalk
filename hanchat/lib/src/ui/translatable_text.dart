@@ -12,11 +12,28 @@ import 'mlkit_translator.dart';
 ///
 /// 번역 엔진: 커스텀 TranslationService 주입 시 UseCase 경유 (Phase 4: AI),
 /// 없으면 ML Kit 온디바이스 (무료, iOS/Android 공통).
+/// 꾹 누르기 메뉴에 추가할 항목 (복사·전달·공유 등 — 호출부가 주입).
+class TextMenuAction {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const TextMenuAction({required this.icon, required this.label, required this.onTap});
+}
+
 class TranslatableText extends StatefulWidget {
   final String text;
   final TextStyle? style;
 
-  const TranslatableText(this.text, {super.key, this.style});
+  /// 번역/원문 아래에 붙는 추가 메뉴 (메시지 말풍선: 복사·전달·공유)
+  final List<TextMenuAction> extraActions;
+
+  const TranslatableText(
+    this.text, {
+    super.key,
+    this.style,
+    this.extraActions = const [],
+  });
 
   @override
   State<TranslatableText> createState() => _TranslatableTextState();
@@ -57,12 +74,12 @@ class _TranslatableTextState extends State<TranslatableText> {
 
   Future<void> _showMenu(
       BuildContext context, Offset position, HanChatL10n l10n) async {
-    final action = await showMenu<String>(
+    final action = await showMenu<Object>(
       context: context,
       position: RelativeRect.fromLTRB(position.dx, position.dy, position.dx, 0),
       items: [
         if (_translated == null)
-          PopupMenuItem(
+          PopupMenuItem<Object>(
             value: 'translate',
             child: Row(children: [
               const Icon(Icons.g_translate, size: 18),
@@ -71,12 +88,21 @@ class _TranslatableTextState extends State<TranslatableText> {
             ]),
           )
         else
-          PopupMenuItem(
+          PopupMenuItem<Object>(
             value: 'original',
             child: Row(children: [
               const Icon(Icons.undo, size: 18),
               const SizedBox(width: 8),
               Text(l10n.t('translate.original')),
+            ]),
+          ),
+        for (final extra in widget.extraActions)
+          PopupMenuItem<Object>(
+            value: extra,
+            child: Row(children: [
+              Icon(extra.icon, size: 18),
+              const SizedBox(width: 8),
+              Text(extra.label),
             ]),
           ),
       ],
@@ -87,6 +113,8 @@ class _TranslatableTextState extends State<TranslatableText> {
         await _translate(l10n);
       case 'original':
         setState(() => _translated = null);
+      case final TextMenuAction extra:
+        extra.onTap();
       default:
     }
   }
@@ -116,8 +144,13 @@ class _TranslatableTextState extends State<TranslatableText> {
       _translated = result;
     });
     if (result == null && mounted) {
+      // floating: 입력창을 가리지 않게 띄움
       ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-        SnackBar(content: Text(l10n.t('translate.failed'))),
+        SnackBar(
+          content: Text(l10n.t('translate.failed')),
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 2),
+        ),
       );
     }
   }

@@ -44,7 +44,7 @@ Future<void> main() async {
 class HanTalkApp extends StatelessWidget {
   const HanTalkApp({super.key});
 
-  static const _brand = Color(0xFFF5C400);
+  static const _brand = Color(0xFF2E9E5B); // 한톡 그린
 
   @override
   Widget build(BuildContext context) {
@@ -110,10 +110,10 @@ class _RootWithSplashState extends State<_RootWithSplash> {
                   style: TextStyle(
                       fontSize: 34,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87)),
+                      color: Colors.white)),
               SizedBox(height: 4),
               Text('24시간 뒤 사라지는 대화',
-                  style: TextStyle(fontSize: 15, color: Colors.black54)),
+                  style: TextStyle(fontSize: 15, color: Colors.white70)),
             ]),
           ),
         ),

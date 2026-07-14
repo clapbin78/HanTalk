@@ -153,6 +153,12 @@ class HanChatL10n {
     'settings.policies': ['약관 및 정책', 'Terms & Policies', '規約とポリシー', '条款与政策'],
     // 그림판
     'draw.title': ['그림 그리기', 'Draw', 'お絵かき', '画图'],
+    // 꾹 누르기 메뉴
+    'menu.copy': ['복사', 'Copy', 'コピー', '复制'],
+    'menu.forward': ['전달', 'Forward', '転送', '转发'],
+    'menu.share': ['공유', 'Share', '共有', '分享'],
+    'copied': ['복사했어요', 'Copied', 'コピーしました', '已复制'],
+    'forward.title': ['전달할 대화 선택', 'Forward to', '転送先を選択', '选择转发对象'],
     // 번역
     'translate': ['번역', 'Translate', '翻訳', '翻译'],
     'translate.original': ['원문 보기', 'Show Original', '原文を表示', '查看原文'],

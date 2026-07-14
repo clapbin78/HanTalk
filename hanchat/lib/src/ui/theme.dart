@@ -7,8 +7,8 @@ class HanChatTheme {
   final Color otherBubble;
 
   const HanChatTheme({
-    this.accent = const Color(0xFFF5C400),
-    this.myBubble = const Color(0xFFFFE54D),
+    this.accent = const Color(0xFF2E9E5B), // 한톡 그린
+    this.myBubble = const Color(0xFFC8F0D6),
     this.otherBubble = const Color(0xFFE9E9EB),
   });
 
