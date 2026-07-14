@@ -31,16 +31,19 @@ class FriendsViewModel extends ChangeNotifier {
     errorKey = null;
     notifyListeners();
     try {
-      if (!await FlutterContacts.requestPermission(readonly: true)) {
+      final status =
+          await FlutterContacts.permissions.request(PermissionType.read);
+      if (status != PermissionStatus.granted) {
         errorKey = 'friends.permNeeded';
         return false;
       }
-      final deviceContacts = await FlutterContacts.getContacts(withProperties: true);
+      final deviceContacts =
+          await FlutterContacts.getAll(properties: {ContactProperty.phone});
       final contacts = [
         for (final c in deviceContacts)
           if (c.phones.isNotEmpty)
             DeviceContact(
-              name: c.displayName,
+              name: c.displayName ?? '',
               phoneNumbers: [for (final p in c.phones) p.number],
             ),
       ];

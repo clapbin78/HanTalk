@@ -25,6 +25,13 @@ iOS 네이티브(Swift) → **Flutter**로 전환됨. Swift 코드는 `ios-nativ
 - 허용된 앱 외에는 보지도 조작하지도 않는다
 - 다른 목적 사용은 절대 금지 (사용자가 명시적으로 강조한 사항)
 
+## 저장소 원칙
+
+- **모노레포 유지** (hanchat + hanchat_firebase + app 한 저장소). 물리 분리는 하지 않는다.
+- pub.dev 정식 배포 시점에 `hanchat/`을 git subtree split으로 별도 저장소로 추출 —
+  이를 위해 hanchat은 저장소 바깥을 참조하지 않게 유지 (자기완결성).
+- 바탕화면 HanTalk 폴더 = 사용자의 옛 프로젝트 (건드리지 말 것)
+
 ## 프로젝트 요약
 
 - `hanchat/` = pub.dev 배포용 Flutter 채팅 SDK (core/data/ui), `app/` = 한톡 껍데기 앱

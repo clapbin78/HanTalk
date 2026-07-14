@@ -69,9 +69,9 @@
     },
     {
       "name": "flutter_contacts",
-      "rootUri": "file:///Users/soobin/.pub-cache/hosted/pub.dev/flutter_contacts-1.1.9+2",
+      "rootUri": "file:///Users/soobin/.pub-cache/hosted/pub.dev/flutter_contacts-2.2.2",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "3.12"
     },
     {
       "name": "flutter_lints",
