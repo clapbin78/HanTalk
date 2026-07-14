@@ -104,6 +104,7 @@ class HanChatClient {
   // UseCases — UI의 유일한 진입점
   final RegisterUserUseCase registerUser;
   final GetCurrentUserUseCase getCurrentUser;
+  final UpdateProfileImagesUseCase updateProfileImages;
   final SyncContactsUseCase syncContacts;
   final GetFriendsUseCase getFriends;
   final ManageFriendsUseCase manageFriends;
@@ -146,6 +147,7 @@ class HanChatClient {
         _syncEngine = syncEngine,
         registerUser = RegisterUserUseCase(userRepository),
         getCurrentUser = GetCurrentUserUseCase(userRepository),
+        updateProfileImages = UpdateProfileImagesUseCase(userRepository),
         syncContacts = SyncContactsUseCase(friendRepository),
         getFriends = GetFriendsUseCase(friendRepository),
         manageFriends = ManageFriendsUseCase(friendRepository),

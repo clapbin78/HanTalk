@@ -303,6 +303,9 @@ class _FakeUserRepository implements UserRepository {
   @override
   Future<User> register({required String nickname, required String phoneNumber}) async =>
       (await currentUser())!;
+
+  @override
+  Future<void> updateProfileImages({String? profilePath, String? coverPath}) async {}
 }
 
 class _FakeEmoticonRepository implements EmoticonRepository {

@@ -10,13 +10,29 @@ class User {
   final String phoneNumberHash;
   final DateTime createdAt;
 
+  /// 프로필 사진 · 배경 사진의 로컬 파일 경로 (기기에만 저장, 서버 미전송).
+  final String? profileImagePath;
+  final String? coverImagePath;
+
   const User({
     required this.id,
     required this.nickname,
     required this.phoneNumberHash,
     required this.createdAt,
+    this.profileImagePath,
+    this.coverImagePath,
   });
 
+  User copyWith({String? profileImagePath, String? coverImagePath}) => User(
+        id: id,
+        nickname: nickname,
+        phoneNumberHash: phoneNumberHash,
+        createdAt: createdAt,
+        profileImagePath: profileImagePath ?? this.profileImagePath,
+        coverImagePath: coverImagePath ?? this.coverImagePath,
+      );
+
+  // 서버로 나가는 JSON에는 이미지 경로를 포함하지 않는다 (로컬 전용).
   Map<String, dynamic> toJson() => {
         'id': id,
         'nickname': nickname,

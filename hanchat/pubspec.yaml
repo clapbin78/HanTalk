@@ -32,6 +32,11 @@ dependencies:
   google_mlkit_language_id: ^0.11.0
   # 메시지 공유 (시스템 공유 시트 — 메모/문자 등 타 앱으로)
   share_plus: ^10.0.0
+  # 프로필 사진: 갤러리 선택 + 자르기 + 리사이즈(용량 절감)
+  image_picker: ^1.1.0
+  image_cropper: ^8.0.0
+  image: ^4.2.0
+  path_provider: ^2.1.0
 
 dev_dependencies:
   flutter_test:

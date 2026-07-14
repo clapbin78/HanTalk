@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '../core/entities.dart';
@@ -10,6 +12,7 @@ import 'emoticon_shop_page.dart';
 import 'friend_manage_page.dart';
 import 'l10n.dart';
 import 'policy_web_page.dart';
+import 'profile_edit_page.dart';
 import 'support_page.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -51,8 +54,26 @@ class _SettingsPageState extends State<SettingsPage> {
       body: ListView(children: [
         _sectionHeader(l10n.t('friends.my')),
         ListTile(
-          title: Text(l10n.t('nickname')),
-          trailing: Text(_me?.nickname ?? ''),
+          leading: CircleAvatar(
+            backgroundColor: Colors.grey.shade300,
+            backgroundImage: _me?.profileImagePath != null
+                ? FileImage(File(_me!.profileImagePath!))
+                : null,
+            child: _me?.profileImagePath == null
+                ? Text((_me?.nickname ?? '?').characters.first,
+                    style: const TextStyle(color: Colors.black54))
+                : null,
+          ),
+          title: Text(_me?.nickname ?? ''),
+          subtitle: Text(l10n.t('profile.edit'),
+              style: const TextStyle(fontSize: 12)),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () async {
+            await Navigator.of(context).push(MaterialPageRoute<void>(
+                builder: (_) => const ProfileEditPage()));
+            final me = await HanChat.client.getCurrentUser();
+            if (mounted) setState(() => _me = me);
+          },
         ),
         ListTile(
           title: Text(l10n.t('friend.manage')),

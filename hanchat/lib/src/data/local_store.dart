@@ -19,7 +19,7 @@ class LocalStore {
     final db = await f.openDatabase(
       path,
       options: OpenDatabaseOptions(
-        version: 3,
+        version: 4,
         // 같은 경로 재사용 시 인스턴스 공유 방지 (테스트 격리 + 명시적 수명 관리)
         singleInstance: false,
         onUpgrade: (db, oldVersion, _) async {
@@ -33,12 +33,18 @@ class LocalStore {
             await db.execute(
                 "ALTER TABLE messages ADD COLUMN read_by TEXT NOT NULL DEFAULT '[]'");
           }
+          if (oldVersion < 4) {
+            // v4: 프로필/배경 사진 로컬 경로
+            await db.execute("ALTER TABLE users ADD COLUMN profile_path TEXT");
+            await db.execute("ALTER TABLE users ADD COLUMN cover_path TEXT");
+          }
         },
         onCreate: (db, _) async {
           await db.execute('''
             CREATE TABLE users (
               id TEXT PRIMARY KEY, nickname TEXT NOT NULL,
-              phone_hash TEXT NOT NULL, created_at TEXT NOT NULL
+              phone_hash TEXT NOT NULL, created_at TEXT NOT NULL,
+              profile_path TEXT, cover_path TEXT
             )''');
           await db.execute('''
             CREATE TABLE friends (
@@ -83,6 +89,8 @@ class LocalStore {
       nickname: r['nickname'] as String,
       phoneNumberHash: r['phone_hash'] as String,
       createdAt: DateTime.parse(r['created_at'] as String),
+      profileImagePath: r['profile_path'] as String?,
+      coverImagePath: r['cover_path'] as String?,
     );
   }
 
@@ -93,9 +101,18 @@ class LocalStore {
           'nickname': user.nickname,
           'phone_hash': user.phoneNumberHash,
           'created_at': user.createdAt.toIso8601String(),
+          'profile_path': user.profileImagePath,
+          'cover_path': user.coverImagePath,
         },
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
+
+  /// 프로필/배경 사진 경로 갱신 (null 전달 시 제거).
+  Future<void> updateProfileImages(
+      {String? profilePath, String? coverPath}) async {
+    await _db.update('users',
+        {'profile_path': profilePath, 'cover_path': coverPath});
+  }
 
   // ── Friends ───────────────────────────────────────────
 

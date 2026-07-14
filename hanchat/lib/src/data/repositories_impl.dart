@@ -51,6 +51,10 @@ class DefaultUserRepository implements UserRepository {
     await _store.saveUser(user);
     return user;
   }
+
+  @override
+  Future<void> updateProfileImages({String? profilePath, String? coverPath}) =>
+      _store.updateProfileImages(profilePath: profilePath, coverPath: coverPath);
 }
 
 class DefaultFriendRepository implements FriendRepository {

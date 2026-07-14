@@ -22,6 +22,16 @@ class GetCurrentUserUseCase {
   Future<User?> call() => _users.currentUser();
 }
 
+/// 프로필/배경 사진 갱신 (로컬 전용). 이미지 파일은 UI가 앱 문서 폴더에
+/// 리사이즈해서 저장하고, 여기엔 그 경로만 넘긴다.
+class UpdateProfileImagesUseCase {
+  final UserRepository _users;
+  const UpdateProfileImagesUseCase(this._users);
+
+  Future<void> call({String? profilePath, String? coverPath}) =>
+      _users.updateProfileImages(profilePath: profilePath, coverPath: coverPath);
+}
+
 class SyncContactsUseCase {
   final FriendRepository _friends;
   const SyncContactsUseCase(this._friends);

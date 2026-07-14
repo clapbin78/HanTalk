@@ -11,6 +11,9 @@
 	<!-- 연락처 권한: 친구 찾기 시점에만 요청됨 (해시 매칭, 원본 미전송) -->
 	<key>NSContactsUsageDescription</key>
 	<string>연락처에서 한톡을 쓰는 친구를 찾기 위해 사용해요. 전화번호 원본은 서버로 전송되지 않습니다. / Used to find friends on HanTalk. Your phone numbers never leave this device.</string>
+	<!-- 사진 권한: 프로필/배경 사진 설정 시에만 요청됨 -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>프로필 사진과 배경 사진을 설정하는 데 사용해요. 선택한 사진은 기기에만 저장됩니다. / Used to set your profile and cover photos. Selected photos stay on your device.</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

@@ -5,6 +5,9 @@ import 'retention.dart';
 abstract interface class UserRepository {
   Future<User?> currentUser();
   Future<User> register({required String nickname, required String phoneNumber});
+
+  /// 프로필/배경 사진 경로 갱신 (기기 로컬 전용, 서버 미전송).
+  Future<void> updateProfileImages({String? profilePath, String? coverPath});
 }
 
 abstract interface class FriendRepository {
