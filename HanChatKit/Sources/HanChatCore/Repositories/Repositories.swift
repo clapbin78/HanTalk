@@ -27,6 +27,24 @@ public protocol ChatRoomRepository: Sendable {
     func observeRooms() -> AsyncStream<[ChatRoom]>
 }
 
+public protocol EmoticonRepository: Sendable {
+    /// 갤러리에 공개 업로드.
+    func upload(_ emoticon: Emoticon) async throws -> Emoticon
+    /// 갤러리 전체 목록 (최신순).
+    func browse() async throws -> [Emoticon]
+    /// 내 보관함 (받은/구매한 이모티콘 — 기기에만 저장).
+    func myCollection() async throws -> [Emoticon]
+    func isInCollection(id: String) async throws -> Bool
+    func addToCollection(_ emoticon: Emoticon) async throws
+}
+
+/// 결제 추상화. Phase 3에서 IAP 코인 차감으로 구현.
+/// 지금은 Stub 구현만 존재하며 UI에 노출되지 않는다 (paidEmoticonsEnabled = false).
+public protocol PaymentGateway: Sendable {
+    /// 성공 시 결제 식별자 반환. 실패 시 throw.
+    func charge(amount: Int, emoticonID: String, buyerID: String) async throws -> String
+}
+
 public protocol MessageRepository: Sendable {
     /// 로컬 저장(즉시 표시) → 서버 업로드 순서로 처리.
     @discardableResult

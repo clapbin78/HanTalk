@@ -4,6 +4,7 @@ import HanChatCore
 /// 미니 그림판. 요구사항대로 딱 두 가지만 설정: 펜 색상, 펜 두께.
 /// 결과물은 이미지가 아니라 획 벡터(DrawingPayload)로 전송된다.
 struct DrawingCanvasView: View {
+    var sendButtonTitle = "보내기"
     let onSend: (DrawingPayload) -> Void
 
     @State private var strokes: [Stroke] = []
@@ -39,7 +40,7 @@ struct DrawingCanvasView: View {
                     Button("취소") { dismiss() }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("보내기") { send() }
+                    Button(sendButtonTitle) { send() }
                         .disabled(strokes.isEmpty && currentPoints.isEmpty)
                 }
             }

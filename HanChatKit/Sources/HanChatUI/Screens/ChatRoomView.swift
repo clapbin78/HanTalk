@@ -52,6 +52,23 @@ final class ChatRoomViewModel {
         }
     }
 
+    var myEmoticons: [Emoticon] = []
+
+    func loadMyEmoticons() async {
+        myEmoticons = (try? await client.getMyEmoticons()) ?? []
+    }
+
+    func sendEmoticon(_ emoticon: Emoticon) async {
+        do {
+            try await client.sendMessage(
+                .emoticon(EmoticonMessage(emoticonID: emoticon.id, payload: emoticon.payload)),
+                roomID: roomID
+            )
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
     func senderName(for message: Message, myID: String) -> String? {
         guard message.senderID != myID else { return nil }
         return friends.first { $0.id == message.senderID }?.displayName ?? "알 수 없음"
@@ -65,6 +82,7 @@ struct ChatRoomView: View {
 
     @State private var viewModel: ChatRoomViewModel
     @State private var showDrawingSheet = false
+    @State private var showEmoticonPicker = false
     @Environment(\.hanChatTheme) private var theme
 
     init(client: HanChatClient, me: User, room: ChatRoom) {
@@ -112,6 +130,13 @@ struct ChatRoomView: View {
                 Task { await viewModel.sendDrawing(payload) }
             }
         }
+        .sheet(isPresented: $showEmoticonPicker) {
+            EmoticonPickerSheet(viewModel: viewModel) { emoticon in
+                showEmoticonPicker = false
+                Task { await viewModel.sendEmoticon(emoticon) }
+            }
+            .presentationDetents([.height(280)])
+        }
         .onAppear { viewModel.startObserving() }
         .onDisappear { viewModel.stopObserving() }
     }
@@ -132,6 +157,13 @@ struct ChatRoomView: View {
                     .font(.title3)
             }
 
+            Button {
+                showEmoticonPicker = true
+            } label: {
+                Image(systemName: "face.smiling")
+                    .font(.title3)
+            }
+
             TextField("메시지 입력", text: Bindable(viewModel).inputText, axis: .vertical)
                 .lineLimit(1...4)
                 .padding(.horizontal, 12)
@@ -149,6 +181,57 @@ struct ChatRoomView: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
         .background(.bar)
+    }
+}
+
+// MARK: - 이모티콘 피커 (내 보관함)
+
+private struct EmoticonPickerSheet: View {
+    @Bindable var viewModel: ChatRoomViewModel
+    let onPick: (Emoticon) -> Void
+    @Environment(\.dismiss) private var dismiss
+
+    private let columns = [GridItem(.adaptive(minimum: 80), spacing: 10)]
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                LazyVGrid(columns: columns, spacing: 10) {
+                    ForEach(viewModel.myEmoticons) { emoticon in
+                        Button {
+                            onPick(emoticon)
+                        } label: {
+                            VStack(spacing: 4) {
+                                DrawingThumbnailView(payload: emoticon.payload)
+                                    .frame(width: 72, height: 72)
+                                Text(emoticon.name)
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(1)
+                            }
+                        }
+                    }
+                }
+                .padding()
+            }
+            .overlay {
+                if viewModel.myEmoticons.isEmpty {
+                    ContentUnavailableView(
+                        "보관함이 비어있어요",
+                        systemImage: "face.dashed",
+                        description: Text("이모티콘 탭에서 받아오거나 직접 그려보세요!")
+                    )
+                }
+            }
+            .navigationTitle("내 이모티콘")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("닫기") { dismiss() }
+                }
+            }
+        }
+        .task { await viewModel.loadMyEmoticons() }
     }
 }
 
@@ -193,6 +276,10 @@ struct MessageBubbleView: View {
                 .frame(width: 200, height: 200 * payload.canvasSize.height / max(payload.canvasSize.width, 1))
                 .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 16))
                 .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color(.systemGray4)))
+        case .emoticon(let emoticon):
+            // 이모티콘: 그림과 같은 벡터 재생, 배경 없이 표시
+            DrawingReplayView(payload: emoticon.payload)
+                .frame(width: 140, height: 140)
         }
     }
 

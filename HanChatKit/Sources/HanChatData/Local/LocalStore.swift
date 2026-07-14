@@ -104,6 +104,27 @@ public actor LocalStore {
         try modelContext.save()
     }
 
+    // MARK: Emoticons (내 보관함 — 기기에만 저장)
+
+    func myEmoticons() throws -> [Emoticon] {
+        let descriptor = FetchDescriptor<SDEmoticonItem>(
+            sortBy: [SortDescriptor(\.addedAt, order: .reverse)]
+        )
+        return try modelContext.fetch(descriptor).compactMap(\.entity)
+    }
+
+    func hasEmoticon(id: String) throws -> Bool {
+        var descriptor = FetchDescriptor<SDEmoticonItem>(predicate: #Predicate { $0.id == id })
+        descriptor.fetchLimit = 1
+        return try !modelContext.fetch(descriptor).isEmpty
+    }
+
+    func addEmoticon(_ emoticon: Emoticon) throws {
+        guard try !hasEmoticon(id: emoticon.id) else { return }
+        modelContext.insert(try SDEmoticonItem(emoticon: emoticon))
+        try modelContext.save()
+    }
+
     // MARK: Messages
 
     func messages(roomID: String) throws -> [Message] {

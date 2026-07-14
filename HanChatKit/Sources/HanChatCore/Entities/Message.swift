@@ -5,11 +5,13 @@ public struct Message: Identifiable, Codable, Hashable, Sendable {
     public enum Content: Codable, Hashable, Sendable {
         case text(String)
         case drawing(DrawingPayload)
+        case emoticon(EmoticonMessage)
 
         public var preview: String {
             switch self {
             case .text(let text): return text
             case .drawing: return "🎨 그림"
+            case .emoticon: return "😊 이모티콘"
             }
         }
     }
@@ -49,11 +51,13 @@ public struct Message: Identifiable, Codable, Hashable, Sendable {
 public enum MessageDraft: Sendable {
     case text(String)
     case drawing(DrawingPayload)
+    case emoticon(EmoticonMessage)
 
     public var content: Message.Content {
         switch self {
         case .text(let t): return .text(t)
         case .drawing(let d): return .drawing(d)
+        case .emoticon(let e): return .emoticon(e)
         }
     }
 }

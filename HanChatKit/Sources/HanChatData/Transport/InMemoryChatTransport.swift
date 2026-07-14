@@ -87,6 +87,8 @@ public actor InMemoryChatTransport: ChatTransport {
             replyText = "\"\(text)\" 잘 받았어요! 저는 데모 봇이라 24시간 뒤면 이 대화도 사라져요 ⏳"
         case .drawing:
             replyText = "그림 멋진데요? 🎨 획이 벡터로 재생되는 거 보셨나요?"
+        case .emoticon:
+            replyText = "이모티콘 잘 받았어요! 😆 갤러리에 올리면 다른 사람들도 쓸 수 있어요"
         }
         let bot = User(
             id: Self.botID,

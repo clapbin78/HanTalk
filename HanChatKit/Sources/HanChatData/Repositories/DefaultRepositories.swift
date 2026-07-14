@@ -120,6 +120,40 @@ public final class DefaultChatRoomRepository: ChatRoomRepository, @unchecked Sen
     }
 }
 
+public final class DefaultEmoticonRepository: EmoticonRepository, @unchecked Sendable {
+    private let store: LocalStore
+    private let gallery: any EmoticonStore
+    private let notifier: ChangeNotifier
+
+    init(store: LocalStore, gallery: any EmoticonStore, notifier: ChangeNotifier) {
+        self.store = store
+        self.gallery = gallery
+        self.notifier = notifier
+    }
+
+    public func upload(_ emoticon: Emoticon) async throws -> Emoticon {
+        try await gallery.upload(emoticon)
+        return emoticon
+    }
+
+    public func browse() async throws -> [Emoticon] {
+        try await gallery.fetchAll()
+    }
+
+    public func myCollection() async throws -> [Emoticon] {
+        try await store.myEmoticons()
+    }
+
+    public func isInCollection(id: String) async throws -> Bool {
+        try await store.hasEmoticon(id: id)
+    }
+
+    public func addToCollection(_ emoticon: Emoticon) async throws {
+        try await store.addEmoticon(emoticon)
+        await notifier.notify("emoticons")
+    }
+}
+
 public final class DefaultMessageRepository: MessageRepository, @unchecked Sendable {
     private let store: LocalStore
     private let transport: any ChatTransport

@@ -49,6 +49,9 @@ struct MainTabView: View {
             ChatListView(client: client, me: me)
                 .tabItem { Label("채팅", systemImage: "message.fill") }
 
+            EmoticonShopView(client: client)
+                .tabItem { Label("이모티콘", systemImage: "face.smiling.inverse") }
+
             SettingsView(client: client, me: me)
                 .tabItem { Label("설정", systemImage: "gearshape.fill") }
         }

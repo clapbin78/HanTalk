@@ -21,6 +21,13 @@ public struct HanChatConfiguration: Sendable {
     public var requestsAppTracking: Bool
     /// 테스트/프리뷰용 인메모리 DB 사용
     public var inMemoryStorage: Bool
+    /// 이모티콘 갤러리 저장소 (Firebase 구현 또는 자체 서버 구현으로 교체 가능)
+    public var emoticonStore: any EmoticonStore
+    /// 결제 게이트웨이. Phase 3에서 IAP 코인 구현으로 교체.
+    public var paymentGateway: any PaymentGateway
+    /// 🚩 유료 이모티콘 기능 스위치. 로직·테스트는 살아있고 UI 노출만 막는다.
+    /// Phase 3(이모티콘 샵 유료화) 때 true로 켠다.
+    public var paidEmoticonsEnabled: Bool
 
     public init(
         transport: any ChatTransport,
@@ -29,7 +36,10 @@ public struct HanChatConfiguration: Sendable {
         termsOfServiceURL: URL? = nil,
         serviceName: String = "한톡",
         requestsAppTracking: Bool = false,
-        inMemoryStorage: Bool = false
+        inMemoryStorage: Bool = false,
+        emoticonStore: any EmoticonStore = InMemoryEmoticonStore(),
+        paymentGateway: any PaymentGateway = StubPaymentGateway(),
+        paidEmoticonsEnabled: Bool = false
     ) {
         self.transport = transport
         self.localRetention = localRetention
@@ -38,6 +48,9 @@ public struct HanChatConfiguration: Sendable {
         self.serviceName = serviceName
         self.requestsAppTracking = requestsAppTracking
         self.inMemoryStorage = inMemoryStorage
+        self.emoticonStore = emoticonStore
+        self.paymentGateway = paymentGateway
+        self.paidEmoticonsEnabled = paidEmoticonsEnabled
     }
 }
 
@@ -50,6 +63,7 @@ public final class HanChatClient: @unchecked Sendable {
     public let friendRepository: any FriendRepository
     public let roomRepository: any ChatRoomRepository
     public let messageRepository: any MessageRepository
+    public let emoticonRepository: any EmoticonRepository
 
     // UseCases (UI 레이어는 이것만 사용한다 — Repository 직접 접근 금지)
     public let registerUser: RegisterUserUseCase
@@ -61,6 +75,10 @@ public final class HanChatClient: @unchecked Sendable {
     public let getFriends: GetFriendsUseCase
     public let observeRooms: ObserveChatRoomsUseCase
     public let observeMessages: ObserveMessagesUseCase
+    public let uploadEmoticon: UploadEmoticonUseCase
+    public let browseEmoticons: BrowseEmoticonsUseCase
+    public let getMyEmoticons: GetMyEmoticonsUseCase
+    public let acquireEmoticon: AcquireEmoticonUseCase
 
     private let syncEngine: MessageSyncEngine
 
@@ -76,11 +94,17 @@ public final class HanChatClient: @unchecked Sendable {
         let friends = DefaultFriendRepository(store: store, transport: transport, notifier: notifier)
         let rooms = DefaultChatRoomRepository(store: store, notifier: notifier)
         let messages = DefaultMessageRepository(store: store, transport: transport, notifier: notifier)
+        let emoticons = DefaultEmoticonRepository(
+            store: store,
+            gallery: configuration.emoticonStore,
+            notifier: notifier
+        )
 
         self.userRepository = users
         self.friendRepository = friends
         self.roomRepository = rooms
         self.messageRepository = messages
+        self.emoticonRepository = emoticons
 
         self.registerUser = RegisterUserUseCase(users: users)
         self.syncContacts = SyncContactsUseCase(friends: friends)
@@ -94,6 +118,18 @@ public final class HanChatClient: @unchecked Sendable {
         self.getFriends = GetFriendsUseCase(friends: friends)
         self.observeRooms = ObserveChatRoomsUseCase(rooms: rooms)
         self.observeMessages = ObserveMessagesUseCase(messages: messages)
+        self.uploadEmoticon = UploadEmoticonUseCase(
+            emoticons: emoticons,
+            users: users,
+            allowPaid: configuration.paidEmoticonsEnabled
+        )
+        self.browseEmoticons = BrowseEmoticonsUseCase(emoticons: emoticons)
+        self.getMyEmoticons = GetMyEmoticonsUseCase(emoticons: emoticons)
+        self.acquireEmoticon = AcquireEmoticonUseCase(
+            emoticons: emoticons,
+            users: users,
+            payment: configuration.paymentGateway
+        )
 
         self.syncEngine = MessageSyncEngine(store: store, transport: transport, notifier: notifier)
     }

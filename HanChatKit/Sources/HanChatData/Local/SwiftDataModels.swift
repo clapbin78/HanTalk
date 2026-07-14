@@ -109,15 +109,53 @@ public final class SDMessage {
     }
 }
 
+@Model
+public final class SDEmoticonItem {
+    @Attribute(.unique) public var id: String
+    public var name: String
+    public var creatorID: String
+    public var creatorNickname: String
+    public var payloadData: Data
+    public var price: Int
+    public var createdAt: Date
+    public var addedAt: Date
+
+    public init(emoticon: Emoticon, addedAt: Date = .now) throws {
+        self.id = emoticon.id
+        self.name = emoticon.name
+        self.creatorID = emoticon.creatorID
+        self.creatorNickname = emoticon.creatorNickname
+        self.payloadData = try JSONEncoder().encode(emoticon.payload)
+        self.price = emoticon.price
+        self.createdAt = emoticon.createdAt
+        self.addedAt = addedAt
+    }
+
+    var entity: Emoticon? {
+        guard let payload = try? JSONDecoder().decode(DrawingPayload.self, from: payloadData) else {
+            return nil
+        }
+        return Emoticon(
+            id: id,
+            name: name,
+            creatorID: creatorID,
+            creatorNickname: creatorNickname,
+            payload: payload,
+            price: price,
+            createdAt: createdAt
+        )
+    }
+}
+
 public enum HanChatSchema {
     public static let models: [any PersistentModel.Type] = [
-        SDUser.self, SDFriend.self, SDChatRoom.self, SDMessage.self,
+        SDUser.self, SDFriend.self, SDChatRoom.self, SDMessage.self, SDEmoticonItem.self,
     ]
 
     public static func makeContainer(inMemory: Bool = false) throws -> ModelContainer {
         let config = ModelConfiguration(isStoredInMemoryOnly: inMemory)
         return try ModelContainer(
-            for: SDUser.self, SDFriend.self, SDChatRoom.self, SDMessage.self,
+            for: SDUser.self, SDFriend.self, SDChatRoom.self, SDMessage.self, SDEmoticonItem.self,
             configurations: config
         )
     }
