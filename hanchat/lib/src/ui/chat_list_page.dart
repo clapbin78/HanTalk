@@ -6,6 +6,7 @@ import '../core/entities.dart';
 import '../data/client.dart';
 import 'chat_room_page.dart';
 import 'l10n.dart';
+import 'root.dart';
 import 'translatable_text.dart';
 
 class ChatListViewModel extends ChangeNotifier {
@@ -82,6 +83,7 @@ class _ChatListPageState extends State<ChatListPage> {
               icon: const Icon(Icons.add_comment),
               onPressed: () => _showNewGroupSheet(context),
             ),
+            const SettingsButton(),
           ],
         ),
         body: _vm.rooms.isEmpty

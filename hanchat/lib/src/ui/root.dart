@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../data/client.dart';
 import 'chat_list_page.dart';
-import 'emoticon_shop_page.dart';
 import 'friends_page.dart';
 import 'l10n.dart';
 import 'onboarding_page.dart';
@@ -80,12 +79,12 @@ class _MainTabsState extends State<_MainTabs> {
   Widget build(BuildContext context) {
     final l10n = HanChatL10n.of(context);
 
+    // 하단바는 친구·채팅 2개. 설정은 각 탭 앱바 우상단 아이콘으로.
+    // 이모티콘은 탭에서 빠지고 설정 화면 안으로 들어감.
     return Scaffold(
       body: IndexedStack(index: _index, children: const [
         FriendsPage(),
         ChatListPage(),
-        EmoticonShopPage(),
-        SettingsPage(),
       ]),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
@@ -95,13 +94,22 @@ class _MainTabsState extends State<_MainTabs> {
               icon: const Icon(Icons.people), label: l10n.t('tab.friends')),
           NavigationDestination(
               icon: const Icon(Icons.chat_bubble), label: l10n.t('tab.chats')),
-          NavigationDestination(
-              icon: const Icon(Icons.emoji_emotions),
-              label: l10n.t('tab.emoticons')),
-          NavigationDestination(
-              icon: const Icon(Icons.settings), label: l10n.t('tab.settings')),
         ],
       ),
+    );
+  }
+}
+
+/// 각 탭 앱바 우상단에 넣는 설정 진입 버튼.
+class SettingsButton extends StatelessWidget {
+  const SettingsButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: const Icon(Icons.settings),
+      onPressed: () => Navigator.of(context).push(
+          MaterialPageRoute<void>(builder: (_) => const SettingsPage())),
     );
   }
 }

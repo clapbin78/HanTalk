@@ -153,6 +153,21 @@ class HanChatL10n {
     'settings.policies': ['약관 및 정책', 'Terms & Policies', '規約とポリシー', '条款与政策'],
     // 그림판
     'draw.title': ['그림 그리기', 'Draw', 'お絵かき', '画图'],
+    // 지원 (공지/FAQ) + 관리자
+    'support.section': ['지원', 'Support', 'サポート', '支持'],
+    'support.announcements': ['공지사항', 'Announcements', 'お知らせ', '公告'],
+    'support.faq': ['자주 묻는 질문', 'FAQ', 'よくある質問', '常见问题'],
+    'support.empty': ['아직 등록된 글이 없어요.', 'Nothing here yet.', 'まだ投稿がありません。', '暂无内容。'],
+    'support.write': ['글쓰기', 'Write', '投稿', '写文章'],
+    'support.publish': ['등록', 'Publish', '公開', '发布'],
+    'support.postTitle': ['제목', 'Title', 'タイトル', '标题'],
+    'support.postBody': ['내용', 'Content', '内容', '内容'],
+    'settings.appInfo': ['앱 정보', 'App Info', 'アプリ情報', '应用信息'],
+    'admin.title': ['관리자 모드', 'Admin Mode', '管理者モード', '管理员模式'],
+    'admin.password': ['관리자 비밀번호', 'Admin Password', '管理者パスワード', '管理员密码'],
+    'admin.unlocked': ['관리자 모드가 켜졌어요.', 'Admin mode enabled.', '管理者モードが有効になりました。', '已启用管理员模式。'],
+    'admin.wrong': ['비밀번호가 올바르지 않아요.', 'Incorrect password.', 'パスワードが正しくありません。', '密码不正确。'],
+    'admin.active': ['관리자 모드 켜짐', 'Admin mode on', '管理者モード オン', '管理员模式已开'],
     // 친구 차단/삭제 관리
     'friend.block': ['차단', 'Block', 'ブロック', '拉黑'],
     'friend.hide': ['삭제', 'Delete', '削除', '删除'],

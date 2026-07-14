@@ -18,3 +18,13 @@ scripts/build-status.txt
 **/.flutter-plugins-dependencies
 **/Podfile.lock
 app/ios/Pods/
+
+# 시크릿 — 절대 커밋 금지 (API 키·비밀번호는 Cloud Function Secret에만)
+*.env
+.env.*
+**/secrets.dart
+**/*secret*
+**/*.key
+**/api_keys*
+GoogleService-Info.plist
+google-services.json

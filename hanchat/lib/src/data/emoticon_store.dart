@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import '../core/entities.dart';
 import '../core/entitlement.dart';
 import '../core/repositories.dart';
+import '../core/support_content.dart';
 
 /// 이모티콘 갤러리 원격 저장소 추상화 (영구 공개 콘텐츠 — 벡터라 수 KB, 비용 미미).
 abstract interface class EmoticonStore {
@@ -127,6 +128,50 @@ class StubTranslationService implements TranslationService {
   @override
   Future<String> translate(String text, {required String toLanguage}) async =>
       '[$toLanguage] $text';
+}
+
+/// 공지/FAQ 스텁 — 데모용 샘플. 실서비스는 hanchat_firebase 구현으로 교체.
+class StubSupportContentService implements SupportContentService {
+  final _posts = <SupportChannel, List<SupportPost>>{
+    SupportChannel.announcements: [
+      SupportPost(
+        id: 'welcome',
+        title: '한톡에 오신 걸 환영합니다 🎉',
+        body: '24시간 뒤 사라지는 가벼운 대화, 한톡입니다.\n그림도 그려서 보내보세요!',
+        createdAt: DateTime.now().subtract(const Duration(days: 1)),
+      ),
+    ],
+    SupportChannel.faq: [
+      SupportPost(
+        id: 'q-disappear',
+        title: '메시지가 왜 사라지나요?',
+        body: '한톡의 메시지는 보낸 지 24시간이 지나면 자동으로 사라집니다. 문자 시절의 가벼운 감성을 살렸어요.',
+        createdAt: DateTime.now().subtract(const Duration(days: 1)),
+      ),
+    ],
+  };
+
+  @override
+  Future<int> version(SupportChannel channel) async =>
+      _posts[channel]?.length ?? 0;
+
+  @override
+  Future<List<SupportPost>> fetch(SupportChannel channel) async =>
+      List.of(_posts[channel] ?? const []);
+
+  @override
+  Future<void> post(SupportChannel channel, SupportPost post,
+      {required String adminToken}) async {
+    _posts.putIfAbsent(channel, () => []).insert(0, post);
+  }
+}
+
+/// 관리자 스텁 — 데모용. 실서비스는 Cloud Function 검증으로 교체.
+/// (데모에선 'demo-admin' 비번을 받으면 통과 — 실서비스에선 절대 이렇게 하지 않음)
+class StubAdminService implements AdminService {
+  @override
+  Future<String?> unlock(String password) async =>
+      password == 'demo-admin' ? 'demo-admin-token' : null;
 }
 
 /// AI 스텁 — Phase 4에서 실제 AI API 구현으로 교체.

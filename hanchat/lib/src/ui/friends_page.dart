@@ -5,6 +5,7 @@ import '../core/entities.dart';
 import '../data/client.dart';
 import 'chat_room_page.dart';
 import 'l10n.dart';
+import 'root.dart';
 import 'translatable_text.dart';
 
 /// MVVM: ViewModel은 UseCase만 호출한다 (Repository 직접 접근 금지 — archcheck 감시).
@@ -137,6 +138,7 @@ class _FriendsPageState extends State<FriendsPage> {
                             child: Text(l10n.t('friends.syncManual'))),
                       ],
                     ),
+              const SettingsButton(),
             ],
           ),
           body: _vm.friends.isEmpty

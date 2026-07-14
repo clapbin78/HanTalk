@@ -27,6 +27,18 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // 공지사항 / FAQ: 읽기는 전체 공개, 쓰기는 서버(Admin SDK/Function)만
+    // 앱은 관리자여도 클라이언트에서 직접 쓰지 않고 Cloud Function을 거친다.
+    match /support/{channel}/posts/{postID} {
+      allow read: if true;
+      allow write: if false;
+    }
+    // 콘텐츠 버전 (경량 조회용 — 앱이 자주 확인해도 저렴)
+    match /support/{channel} {
+      allow read: if true;
+      allow write: if false;
+    }
+
     // 우편함: 발신(생성)은 로그인 사용자 누구나, 읽기/삭제(ack)는 수신자 본인만
     match /mailboxes/{recipientID}/envelopes/{envelopeID} {
       allow create: if request.auth != null;

@@ -37,6 +37,12 @@ iOS 네이티브(Swift) → **Flutter**로 전환됨. Swift 코드는 `ios-nativ
 - 공개 문서·코드·정책의 연락 이메일은 **clapbin78@gmail.com 만 사용**
 - clapbinbox@gmail.com 은 절대 쓰지 않는다 (발견 즉시 교체)
 
+## 시크릿 (절대 규칙 — SECURITY.md 참고)
+
+- API 키·관리자 비번은 앱/깃에 절대 두지 않는다. Cloud Function Secret에만.
+- 키를 코드에 임시로 넣었더라도 **커밋/푸시 전 반드시 제거** (사용자 강조)
+- `.gitignore`에 시크릿 패턴 등록됨 (*.env, *secret*, *.key, GoogleService-Info.plist 등)
+
 ## 프로젝트 요약
 
 - `hanchat/` = pub.dev 배포용 Flutter 채팅 SDK (core/data/ui), `app/` = 한톡 껍데기 앱
