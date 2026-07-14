@@ -3,7 +3,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import '../core/profile.dart';
+import '../core/report.dart';
 import '../data/client.dart';
+import 'l10n.dart';
+import 'report_sheet.dart';
 import 'theme.dart';
 
 /// 상대 프로필 보기 — 이름/아이콘을 누르면 열린다. 사진 + 배경 표시.
@@ -56,6 +59,31 @@ class _ProfileViewPageState extends State<ProfileViewPage> {
             backgroundColor: Colors.transparent,
             elevation: 0,
             foregroundColor: Colors.white,
+            actions: [
+              PopupMenuButton<String>(
+                onSelected: (value) {
+                  if (value == 'report') {
+                    showReportSheet(
+                      context,
+                      targetType: ReportTargetType.profile,
+                      targetId: widget.userId,
+                      reportedUserId: widget.userId,
+                      snapshot: _vm.displayName,
+                    );
+                  }
+                },
+                itemBuilder: (menuContext) => [
+                  PopupMenuItem(
+                    value: 'report',
+                    child: Row(children: [
+                      const Icon(Icons.flag_outlined, size: 18),
+                      const SizedBox(width: 8),
+                      Text(HanChatL10n.of(menuContext).t('report')),
+                    ]),
+                  ),
+                ],
+              ),
+            ],
           ),
           extendBodyBehindAppBar: true,
           body: ListView(padding: EdgeInsets.zero, children: [

@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import '../core/entities.dart';
 import '../core/entitlement.dart';
 import '../core/profile.dart';
+import '../core/report.dart';
 import '../core/repositories.dart';
 import '../core/support_content.dart';
 
@@ -199,6 +200,14 @@ class InMemoryProfileService implements ProfileService {
 
   @override
   Future<PublicProfile?> fetch(String userId) async => _profiles[userId];
+}
+
+/// 신고 스텁 — 데모용 (접수 개수만 기록). 실서비스는 Firebase 구현으로 교체.
+class InMemoryReportService implements ReportService {
+  final List<Report> received = [];
+
+  @override
+  Future<void> submit(Report report) async => received.add(report);
 }
 
 /// 관리자 스텁 — 데모용. 실서비스는 Cloud Function 검증으로 교체.

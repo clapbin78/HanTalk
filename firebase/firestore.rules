@@ -27,6 +27,12 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // 신고: 로그인 사용자가 생성(접수)만, 읽기/수정은 운영자(Admin SDK)만
+    match /reports/{reportID} {
+      allow create: if request.auth != null;
+      allow read, update, delete: if false;
+    }
+
     // 프로필: 로그인 사용자 읽기(친구 프로필 보기), 쓰기는 본인만
     // Phase 2: userID를 auth.uid와 매핑해 본인만 쓰도록 강화
     match /profiles/{userID} {

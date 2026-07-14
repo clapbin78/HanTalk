@@ -7,9 +7,11 @@ import 'package:share_plus/share_plus.dart';
 import '../core/entities.dart';
 import '../data/client.dart';
 import '../data/read_receipt_setting.dart';
+import '../core/report.dart';
 import 'drawing.dart';
 import 'l10n.dart';
 import 'profile_view_page.dart';
+import 'report_sheet.dart';
 import 'theme.dart';
 import 'translatable_text.dart';
 
@@ -499,6 +501,19 @@ class _MessageBubble extends StatelessWidget {
                 label: l10n.t('menu.share'),
                 onTap: () => Share.share(text),
               ),
+              // 남의 메시지만 신고 가능
+              if (!isMine)
+                TextMenuAction(
+                  icon: Icons.flag_outlined,
+                  label: l10n.t('report'),
+                  onTap: () => showReportSheet(
+                    context,
+                    targetType: ReportTargetType.message,
+                    targetId: message.id,
+                    reportedUserId: message.senderId,
+                    snapshot: text,
+                  ),
+                ),
             ],
           ),
         ),

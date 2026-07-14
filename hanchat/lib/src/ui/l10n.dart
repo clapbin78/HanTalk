@@ -183,6 +183,16 @@ class HanChatL10n {
     'friend.blockedSection': ['차단한 친구', 'Blocked', 'ブロック中', '已拉黑'],
     'friend.hiddenSection': ['삭제한 친구', 'Deleted', '削除済み', '已删除'],
     'friend.manageEmpty': ['차단하거나 삭제한 친구가 없어요.', 'No blocked or deleted friends.', 'ブロック・削除した友だちはいません。', '没有拉黑或删除的朋友。'],
+    // 신고
+    'report': ['신고', 'Report', '通報', '举报'],
+    'report.title': ['무엇이 문제인가요?', 'What\'s wrong?', '何が問題ですか？', '有什么问题？'],
+    'report.spam': ['스팸/광고', 'Spam or ads', 'スパム/広告', '垃圾信息/广告'],
+    'report.harassment': ['괴롭힘/욕설', 'Harassment', '嫌がらせ/暴言', '骚扰/辱骂'],
+    'report.sexual': ['음란물', 'Sexual content', 'わいせつ物', '色情内容'],
+    'report.illegal': ['불법 정보', 'Illegal content', '違法情報', '违法信息'],
+    'report.other': ['기타', 'Other', 'その他', '其他'],
+    'report.done': ['신고가 접수되었어요. 검토 후 조치할게요.', 'Report received. We\'ll review it.', '通報を受け付けました。確認いたします。', '举报已收到，我们会进行审核。'],
+    'report.alsoBlock': ['이 사용자를 차단할까요?', 'Block this user too?', 'このユーザーをブロックしますか？', '同时拉黑该用户？'],
     // 꾹 누르기 메뉴
     'menu.copy': ['복사', 'Copy', 'コピー', '复制'],
     'menu.forward': ['전달', 'Forward', '転送', '转发'],

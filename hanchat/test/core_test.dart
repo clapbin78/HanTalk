@@ -296,6 +296,30 @@ void main() {
     });
   });
 
+  group('신고 (UGC 안전)', () {
+    test('신고 접수 — 대상·사유·스냅샷 기록', () async {
+      final service = InMemoryReportService();
+      final submit = SubmitReportUseCase(service);
+
+      await submit(
+        reporterId: 'me',
+        targetType: ReportTargetType.message,
+        targetId: 'msg-1',
+        reportedUserId: 'bad-user',
+        reason: ReportReason.harassment,
+        snapshot: '욕설 내용',
+      );
+
+      expect(service.received.length, 1);
+      final report = service.received.single;
+      expect(report.reason, ReportReason.harassment);
+      expect(report.reportedUserId, 'bad-user');
+      expect(report.snapshot, '욕설 내용');
+      // JSON 직렬화 확인 (서버 전송용)
+      expect(report.toJson()['reason'], 'harassment');
+    });
+  });
+
   group('AI · 번역 (🚩 AI는 플래그 OFF, 번역은 상시)', () {
     test('AI 답장추천: 플래그 OFF 차단 / ON 동작 / 빈 대화 빈 결과', () async {
       final message = Message(

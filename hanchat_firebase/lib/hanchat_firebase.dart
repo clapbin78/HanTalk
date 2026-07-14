@@ -207,6 +207,23 @@ class FirebaseProfileService implements ProfileService {
   }
 }
 
+/// ReportService의 Firebase 구현 — 신고를 reports 컬렉션에 접수 (운영자만 읽음).
+class FirebaseReportService implements ReportService {
+  final FirebaseFirestore _db;
+
+  FirebaseReportService({FirebaseFirestore? firestore})
+      : _db = firestore ?? FirebaseFirestore.instance;
+
+  @override
+  Future<void> submit(Report report) async {
+    await FirebaseChatTransport.signInIfNeeded();
+    await _db.collection('reports').doc(report.id).set({
+      ...report.toJson(),
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+  }
+}
+
 /// EntitlementService의 Firebase 구현 — 임티샵 옵션(업로드/판매) 결제 확인.
 ///
 /// Firestore: `licenses/{appId}` 문서의 `uploadEnabled: bool`.
