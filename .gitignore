@@ -11,3 +11,10 @@ firebase/functions/node_modules/
 scripts/build-latest.log
 scripts/build-errors.txt
 scripts/build-status.txt
+
+# Flutter 빌드 산출물 (각 패키지)
+**/build/
+**/.dart_tool/
+**/.flutter-plugins-dependencies
+**/Podfile.lock
+app/ios/Pods/
