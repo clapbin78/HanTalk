@@ -147,11 +147,38 @@ class FirebaseChatTransport implements ChatTransport {
   }
 }
 
+/// EntitlementService의 Firebase 구현 — 임티샵 옵션(업로드/판매) 결제 확인.
+///
+/// Firestore: `licenses/{appId}` 문서의 `uploadEnabled: bool`.
+/// 이 문서는 운영자(콘솔/관리 도구)만 쓸 수 있고 (rules에서 강제),
+/// 결제된 앱의 appId 문서에만 true가 들어간다.
+/// ⚠️ UI 숨김은 1차 방어일 뿐 — emoticons 컬렉션 create 규칙에서도
+/// 라이선스를 확인해 서버에서 이중으로 강제한다 (firestore.rules 참고).
+class FirebaseEntitlementService implements EntitlementService {
+  final FirebaseFirestore _db;
+
+  FirebaseEntitlementService({FirebaseFirestore? firestore})
+      : _db = firestore ?? FirebaseFirestore.instance;
+
+  @override
+  Future<ShopEntitlement> fetch(String appId) async {
+    await FirebaseChatTransport.signInIfNeeded();
+    final doc = await _db.collection('licenses').doc(appId).get();
+    if (!doc.exists) return ShopEntitlement.none;
+    return ShopEntitlement(
+      uploadEnabled: doc.data()?['uploadEnabled'] as bool? ?? false,
+    );
+  }
+}
+
 /// EmoticonStore의 Firebase 구현 — 공개 갤러리 (벡터 JSON, 수 KB).
 class FirebaseEmoticonStore implements EmoticonStore {
   final FirebaseFirestore _db;
 
-  FirebaseEmoticonStore({FirebaseFirestore? firestore})
+  /// 업로드 시 라이선스 검증에 쓰이는 이 앱의 식별자 (HanChatConfig.appId와 동일하게)
+  final String appId;
+
+  FirebaseEmoticonStore({required this.appId, FirebaseFirestore? firestore})
       : _db = firestore ?? FirebaseFirestore.instance;
 
   @override
@@ -159,6 +186,7 @@ class FirebaseEmoticonStore implements EmoticonStore {
     await FirebaseChatTransport.signInIfNeeded();
     await _db.collection('emoticons').doc(emoticon.id).set({
       'json': jsonEncode(emoticon.toJson()),
+      'appID': appId, // 서버 규칙이 licenses/{appID}.uploadEnabled 확인
       'createdAt': Timestamp.fromDate(emoticon.createdAt),
     });
   }

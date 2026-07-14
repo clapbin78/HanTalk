@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import '../core/entities.dart';
+import '../core/entitlement.dart';
 import '../core/repositories.dart';
 
 /// 이모티콘 갤러리 원격 저장소 추상화 (영구 공개 콘텐츠 — 벡터라 수 KB, 비용 미미).
@@ -101,6 +102,22 @@ class StubPaymentGateway implements PaymentGateway {
     records.add((amount: amount, emoticonId: emoticonId, buyerId: buyerId));
     return 'stub-payment-${records.length}';
   }
+}
+
+/// 라이선스 스텁 — 데모/테스트용.
+/// 실서비스는 hanchat_firebase의 서버 구현으로 교체 (appId → 결제 여부 조회).
+class StubEntitlementService implements EntitlementService {
+  final ShopEntitlement _result;
+
+  const StubEntitlementService({ShopEntitlement result = ShopEntitlement.none})
+      : _result = result;
+
+  /// 데모 앱용: 모든 기능 체험 가능
+  const StubEntitlementService.fullAccess()
+      : _result = const ShopEntitlement(uploadEnabled: true);
+
+  @override
+  Future<ShopEntitlement> fetch(String appId) async => _result;
 }
 
 /// 번역 스텁 — 테스트용 (실제 기본값은 UI의 ML Kit 온디바이스 번역).

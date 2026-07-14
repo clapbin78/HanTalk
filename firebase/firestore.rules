@@ -8,10 +8,21 @@ service cloud.firestore {
       allow write: if request.auth != null; // Phase 2: request.auth.uid 매핑 강화
     }
 
-    // 이모티콘 갤러리: 공개 콘텐츠 — 로그인 사용자 읽기, 생성은 본인 작품만
+    // 임티샵 라이선스: 앱(appId)별 옵션 결제 상태 — 읽기만 공개, 쓰기는 운영자 전용
+    match /licenses/{appID} {
+      allow read: if request.auth != null;
+      allow write: if false; // 운영자가 콘솔/Admin SDK로만 발급
+    }
+
+    // 이모티콘 갤러리: "사용(읽기)"은 모든 앱 기본 제공.
+    // "업로드(생성)"는 유료 옵션 — 요청에 담긴 appId의 라이선스를 서버에서 확인.
+    // (UI 숨김은 1차 방어일 뿐, 진짜 강제는 여기서)
     match /emoticons/{emoticonID} {
       allow read: if request.auth != null;
-      allow create: if request.auth != null;
+      allow create: if request.auth != null
+        && request.resource.data.appID is string
+        && get(/databases/$(database)/documents/licenses/$(request.resource.data.appID))
+             .data.uploadEnabled == true;
       // 수정/삭제는 Phase 3에서 크리에이터 본인 검증과 함께 열 예정
       allow update, delete: if false;
     }

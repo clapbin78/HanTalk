@@ -11,10 +11,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // 세로 모드 전용 (메신저 UX 표준)
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   // ── 데모 모드: 서버 없이 실행 (한톡봇이 답장해 줌) ─────────
   // 연락처 매칭 테스트: 아래 번호를 기기 연락처에 저장해 보세요.
@@ -34,6 +31,7 @@ Future<void> main() async {
     privacyPolicyUrl: Uri.parse('https://clapbin78.github.io/HanTalk/privacy.html'),
     termsOfServiceUrl: Uri.parse('https://clapbin78.github.io/HanTalk/terms.html'),
     serviceName: '한톡',
+    appId: 'com.hantalk.app', // 임티샵 옵션 결제 확인용 식별자 (서버 licenses/{appId})
     // 🚩 숨겨진 기능들 (구조·테스트 완비, 때가 되면 켜기만):
     // paidEmoticonsEnabled: true,  // Phase 3: 이모티콘 유료 판매
     // aiAssistantEnabled: true,    // Phase 4: AI 답장 추천

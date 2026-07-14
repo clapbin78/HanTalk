@@ -32,6 +32,11 @@ iOS 네이티브(Swift) → **Flutter**로 전환됨. Swift 코드는 `ios-nativ
   이를 위해 hanchat은 저장소 바깥을 참조하지 않게 유지 (자기완결성).
 - 바탕화면 HanTalk 폴더 = 사용자의 옛 프로젝트 (건드리지 말 것)
 
+## 연락처 이메일 (절대 규칙)
+
+- 공개 문서·코드·정책의 연락 이메일은 **clapbin78@gmail.com 만 사용**
+- clapbinbox@gmail.com 은 절대 쓰지 않는다 (발견 즉시 교체)
+
 ## 프로젝트 요약
 
 - `hanchat/` = pub.dev 배포용 Flutter 채팅 SDK (core/data/ui), `app/` = 한톡 껍데기 앱
@@ -39,6 +44,9 @@ iOS 네이티브(Swift) → **Flutter**로 전환됨. Swift 코드는 `ios-nativ
   ephemeral(24h) 기본, retain(n일) 옵션
 - 그림/이모티콘 = 획 벡터 JSON (Swift 버전과 포맷 호환 유지 — 크로스플랫폼 전제)
 - 피처 플래그: paidEmoticonsEnabled=false, aiAssistantEnabled=false (로직·테스트는 상시 유지)
+- 임티샵 = 중앙 서버 공유 갤러리: 사용(둘러보기·받기·전송)은 전 앱 기본 제공,
+  업로드/판매는 유료 옵션 — 서버가 appId로 licenses/{appId} 결제 확인해야만 UI 노출
+  (클라 플래그만으로 불가, firestore.rules에서 이중 강제)
 - 번역 = 핵심 기능: 기본 ML Kit 온디바이스, TranslationService 주입 시 AI 번역 (Phase 4)
 - 검증 실패 메시지는 l10n 키로 throw (`error.emptyMessage` 등) → UI에서 번역
 - 규제: COMPLIANCE.md (EU 기준선, 4개국 출시: 미국→유럽→한국→일본)

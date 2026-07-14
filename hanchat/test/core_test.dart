@@ -243,6 +243,31 @@ void main() {
     });
   });
 
+  group('임티샵 라이선스 (서버 검증 옵션)', () {
+    test('결제 확인된 앱만 업로드 권한', () async {
+      final licensed = GetShopEntitlementUseCase(
+        const StubEntitlementService(
+            result: ShopEntitlement(uploadEnabled: true)),
+        appId: 'paid-app',
+      );
+      expect((await licensed()).uploadEnabled, isTrue);
+
+      final unlicensed = GetShopEntitlementUseCase(
+        const StubEntitlementService(), // 기본 = none
+        appId: 'free-app',
+      );
+      expect((await unlicensed()).uploadEnabled, isFalse);
+    });
+
+    test('서버 오류 시 안전하게 업로드 불가 (사용은 영향 없음)', () async {
+      final useCase = GetShopEntitlementUseCase(
+        _ThrowingEntitlementService(),
+        appId: 'any',
+      );
+      expect((await useCase()).uploadEnabled, isFalse);
+    });
+  });
+
   group('AI · 번역 (🚩 AI는 플래그 OFF, 번역은 상시)', () {
     test('AI 답장추천: 플래그 OFF 차단 / ON 동작 / 빈 대화 빈 결과', () async {
       final message = Message(
@@ -303,6 +328,12 @@ class _FakeEmoticonRepository implements EmoticonRepository {
   Future<void> addToCollection(Emoticon emoticon) async {
     if (!await isInCollection(emoticon.id)) collection.add(emoticon);
   }
+}
+
+class _ThrowingEntitlementService implements EntitlementService {
+  @override
+  Future<ShopEntitlement> fetch(String appId) async =>
+      throw const TransportException('license server down');
 }
 
 class _FailingGateway implements PaymentGateway {

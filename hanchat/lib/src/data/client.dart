@@ -1,5 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 
+import '../core/entitlement.dart';
 import '../core/repositories.dart';
 import '../core/retention.dart';
 import '../core/usecases.dart';
@@ -40,6 +41,13 @@ class HanChatConfig {
   /// 번역 — null이면 UI가 ML Kit 온디바이스 번역 사용 (무료).
   final TranslationService? translationService;
 
+  /// 이 앱의 식별자 — 임티샵 옵션(업로드/판매) 결제 여부를 서버가 이걸로 확인.
+  final String appId;
+
+  /// 라이선스 서버. 갤러리 "사용"은 검증 없이 모든 앱 기본 제공이지만,
+  /// "업로드/판매" UI는 이 서비스가 결제 확인을 해줘야만 노출된다.
+  final EntitlementService entitlementService;
+
   /// DB 경로 (기본: 앱 데이터 디렉터리의 hanchat.db). 테스트에서 인메모리 지정.
   final String? databasePath;
   final DatabaseFactory? databaseFactory;
@@ -56,11 +64,16 @@ class HanChatConfig {
     AIAssistantService? aiService,
     this.aiAssistantEnabled = false,
     this.translationService,
+    this.appId = 'demo',
+    EntitlementService? entitlementService,
     this.databasePath,
     this.databaseFactory,
   })  : emoticonStore = emoticonStore ?? InMemoryEmoticonStore(),
         paymentGateway = paymentGateway ?? StubPaymentGateway(),
-        aiService = aiService ?? const StubAIAssistantService();
+        aiService = aiService ?? const StubAIAssistantService(),
+        // 데모 기본값: 전 기능 체험. 실서비스는 Firebase 구현 주입 필수.
+        entitlementService =
+            entitlementService ?? const StubEntitlementService.fullAccess();
 
   bool get hasPolicies => privacyPolicyUrl != null && termsOfServiceUrl != null;
 }
@@ -96,6 +109,9 @@ class HanChatClient {
   /// 커스텀 번역 서비스가 주입된 경우에만 존재 (null → UI가 ML Kit 사용)
   final TranslateTextUseCase? translateText;
 
+  /// 임티샵 옵션 권한 (서버 확인, 캐시됨)
+  final GetShopEntitlementUseCase getShopEntitlement;
+
   final LocalStore _store;
   final MessageSyncEngine _syncEngine;
 
@@ -130,7 +146,10 @@ class HanChatClient {
             SuggestRepliesUseCase(config.aiService, enabled: config.aiAssistantEnabled),
         translateText = config.translationService == null
             ? null
-            : TranslateTextUseCase(config.translationService!);
+            : TranslateTextUseCase(config.translationService!),
+        getShopEntitlement = GetShopEntitlementUseCase(
+            config.entitlementService,
+            appId: config.appId);
 
   static Future<HanChatClient> create(HanChatConfig config) async {
     final path = config.databasePath ?? '${await getDatabasesPath()}/hanchat.db';

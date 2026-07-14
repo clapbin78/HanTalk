@@ -14,6 +14,10 @@ class EmoticonShopViewModel extends ChangeNotifier {
   bool loading = false;
   String? errorKey;
 
+  /// 임티샵 옵션(업로드/판매) — 서버가 appId 결제 확인을 해줘야만 true.
+  /// 클라이언트에서 뭘 켜도 서버 확인 없이는 업로드 UI가 노출되지 않는다.
+  bool uploadAllowed = false;
+
   EmoticonShopViewModel(this._client);
 
   /// 🚩 유료 기능 노출 여부 — Phase 3에서 config로 켠다
@@ -25,6 +29,7 @@ class EmoticonShopViewModel extends ChangeNotifier {
     try {
       gallery = await _client.browseEmoticons();
       ownedIds = {for (final e in await _client.getMyEmoticons()) e.id};
+      uploadAllowed = (await _client.getShopEntitlement()).uploadEnabled;
     } catch (e) {
       errorKey = e.toString();
     } finally {
@@ -80,10 +85,12 @@ class _EmoticonShopPageState extends State<EmoticonShopPage> {
           appBar: AppBar(
             title: Text(l10n.t('tab.emoticons')),
             actions: [
-              IconButton(
-                icon: const Icon(Icons.add_circle),
-                onPressed: _startUploadFlow,
-              ),
+              // 업로드 = 유료 옵션. 서버 결제 확인(entitlement) 없으면 버튼 자체가 없음.
+              if (_vm.uploadAllowed)
+                IconButton(
+                  icon: const Icon(Icons.add_circle),
+                  onPressed: _startUploadFlow,
+                ),
             ],
           ),
           body: RefreshIndicator(
