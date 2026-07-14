@@ -63,3 +63,6 @@ iOS 네이티브(Swift) → **Flutter**로 전환됨. Swift 코드는 `ios-nativ
   MessageContent(sealed)에 Control 케이스 추가 → SyncEngine에서 분기 → UI 반영 순.
   현재 구조가 이 확장을 전제로 설계돼 있음 (봉투 프로토콜·sealed class)
 - 기기 설치·체험은 `flutter run --release`, 개발(핫리로드)은 debug+F5
+- **hanchat에 의존성(패키지) 추가 시 app도 `flutter pub get` 필수** (안 하면 app 빌드
+  "Couldn't resolve package" 에러). autobuild가 test 모드에서 app pub get도 함께 수행.
+  네이티브 플러그인 추가 시엔 `cd app && flutter clean && flutter pub get`

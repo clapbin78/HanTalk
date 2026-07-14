@@ -52,6 +52,10 @@ while true; do
         ( cd hanchat && flutter pub get && flutter analyze && flutter test ) \
           >> scripts/build-latest.log 2>&1
         RESULT=$?
+        # app도 pub get으로 새 패키지 반영 (hanchat 의존성 추가 시 app 갱신 필수)
+        if [ $RESULT -eq 0 ] && [ -d app ]; then
+          ( cd app && flutter pub get ) >> scripts/build-latest.log 2>&1 || true
+        fi
         # Firebase 어댑터 패키지도 정적 분석 (테스트는 에뮬레이터 필요라 제외)
         if [ $RESULT -eq 0 ] && [ -d hanchat_firebase ]; then
           ( cd hanchat_firebase && flutter pub get && flutter analyze ) \
