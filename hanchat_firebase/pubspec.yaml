@@ -1,0 +1,25 @@
+# hanchat_firebase — hanchat의 Firebase 백엔드 어댑터 (별도 패키지)
+# hanchat 사용 앱이 Firebase를 강제로 의존하지 않도록 분리되어 있다.
+# 자체 서버를 쓰려면 이 패키지 대신 ChatTransport를 직접 구현하면 된다.
+name: hanchat_firebase
+description: Firebase (Firestore) transport and emoticon gallery for the hanchat SDK.
+version: 0.1.0
+repository: https://github.com/clapbin78/HanTalk
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+  flutter: ">=3.19.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  hanchat:
+    path: ../hanchat
+  firebase_core: ^3.6.0
+  firebase_auth: ^5.3.0
+  cloud_firestore: ^5.4.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0

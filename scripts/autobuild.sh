@@ -51,7 +51,13 @@ while true; do
       *)
         ( cd hanchat && flutter pub get && flutter analyze && flutter test ) \
           >> scripts/build-latest.log 2>&1
-        RESULT=$? ;;
+        RESULT=$?
+        # Firebase 어댑터 패키지도 정적 분석 (테스트는 에뮬레이터 필요라 제외)
+        if [ $RESULT -eq 0 ] && [ -d hanchat_firebase ]; then
+          ( cd hanchat_firebase && flutter pub get && flutter analyze ) \
+            >> scripts/build-latest.log 2>&1
+          RESULT=$?
+        fi ;;
     esac
 
     if [ $RESULT -eq 0 ]; then
