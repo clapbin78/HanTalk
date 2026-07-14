@@ -27,6 +27,13 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // 프로필: 로그인 사용자 읽기(친구 프로필 보기), 쓰기는 본인만
+    // Phase 2: userID를 auth.uid와 매핑해 본인만 쓰도록 강화
+    match /profiles/{userID} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+
     // 공지사항 / FAQ: 읽기는 전체 공개, 쓰기는 서버(Admin SDK/Function)만
     // 앱은 관리자여도 클라이언트에서 직접 쓰지 않고 Cloud Function을 거친다.
     match /support/{channel}/posts/{postID} {

@@ -14,6 +14,7 @@ export 'src/core/repositories.dart';
 export 'src/core/usecases.dart';
 export 'src/core/entitlement.dart';
 export 'src/core/support_content.dart';
+export 'src/core/profile.dart';
 
 // Data — 우체통 프로토콜과 기본 구현
 export 'src/data/chat_transport.dart';

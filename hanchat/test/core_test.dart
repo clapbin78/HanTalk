@@ -268,6 +268,34 @@ void main() {
     });
   });
 
+  group('프로필 (상대가 볼 수 있게 발행/조회)', () {
+    test('발행하면 다른 사용자가 조회 가능', () async {
+      final service = InMemoryProfileService();
+      final publish = PublishProfileUseCase(service);
+      final get = GetProfileUseCase(service);
+
+      expect(await get('u1'), isNull);
+      await publish(
+          userId: 'u1',
+          nickname: '철수',
+          localProfilePath: '/img/a.jpg',
+          localCoverPath: '/img/b.jpg');
+
+      final profile = await get('u1');
+      expect(profile?.nickname, '철수');
+      expect(profile?.profileImageUrl, '/img/a.jpg');
+      expect(profile?.coverImageUrl, '/img/b.jpg');
+    });
+
+    test('사진 없이도 발행 가능 (이니셜 아바타)', () async {
+      final service = InMemoryProfileService();
+      await PublishProfileUseCase(service)(userId: 'u2', nickname: '영희');
+      final profile = await GetProfileUseCase(service)('u2');
+      expect(profile?.nickname, '영희');
+      expect(profile?.profileImageUrl, isNull);
+    });
+  });
+
   group('AI · 번역 (🚩 AI는 플래그 OFF, 번역은 상시)', () {
     test('AI 답장추천: 플래그 OFF 차단 / ON 동작 / 빈 대화 빈 결과', () async {
       final message = Message(

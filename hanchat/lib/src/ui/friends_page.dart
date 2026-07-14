@@ -5,6 +5,7 @@ import '../core/entities.dart';
 import '../data/client.dart';
 import 'chat_room_page.dart';
 import 'l10n.dart';
+import 'profile_view_page.dart';
 import 'root.dart';
 import 'translatable_text.dart';
 
@@ -162,7 +163,12 @@ class _FriendsPageState extends State<FriendsPage> {
                   ),
                   for (final friend in _vm.friends)
                     ListTile(
-                      leading: _Avatar(name: friend.displayName),
+                      // 아이콘 탭 → 상대 프로필 보기 (행 탭 → 채팅)
+                      leading: GestureDetector(
+                        onTap: () => openProfile(context,
+                            userId: friend.id, fallbackName: friend.displayName),
+                        child: _Avatar(name: friend.displayName),
+                      ),
                       title: TranslatableText(friend.displayName),
                       subtitle: friend.localName != null &&
                               friend.localName != friend.nickname

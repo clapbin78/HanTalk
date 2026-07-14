@@ -1,6 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 
 import '../core/entitlement.dart';
+import '../core/profile.dart';
 import '../core/repositories.dart';
 import '../core/retention.dart';
 import '../core/support_content.dart';
@@ -55,6 +56,9 @@ class HanChatConfig {
   /// 관리자 모드 (비번 검증은 Cloud Function). 실서비스는 Firebase 구현 주입.
   final AdminService adminService;
 
+  /// 프로필 발행/조회 (사진·배경). 실서비스는 Firebase(Storage) 구현 주입.
+  final ProfileService profileService;
+
   /// DB 경로 (기본: 앱 데이터 디렉터리의 hanchat.db). 테스트에서 인메모리 지정.
   final String? databasePath;
   final DatabaseFactory? databaseFactory;
@@ -75,6 +79,7 @@ class HanChatConfig {
     EntitlementService? entitlementService,
     SupportContentService? supportService,
     AdminService? adminService,
+    ProfileService? profileService,
     this.databasePath,
     this.databaseFactory,
   })  : emoticonStore = emoticonStore ?? InMemoryEmoticonStore(),
@@ -84,7 +89,8 @@ class HanChatConfig {
         entitlementService =
             entitlementService ?? const StubEntitlementService.fullAccess(),
         supportService = supportService ?? StubSupportContentService(),
-        adminService = adminService ?? StubAdminService();
+        adminService = adminService ?? StubAdminService(),
+        profileService = profileService ?? InMemoryProfileService();
 
   bool get hasPolicies => privacyPolicyUrl != null && termsOfServiceUrl != null;
 }
@@ -105,6 +111,8 @@ class HanChatClient {
   final RegisterUserUseCase registerUser;
   final GetCurrentUserUseCase getCurrentUser;
   final UpdateProfileImagesUseCase updateProfileImages;
+  final GetProfileUseCase getProfile;
+  final PublishProfileUseCase publishProfile;
   final SyncContactsUseCase syncContacts;
   final GetFriendsUseCase getFriends;
   final ManageFriendsUseCase manageFriends;
@@ -148,6 +156,8 @@ class HanChatClient {
         registerUser = RegisterUserUseCase(userRepository),
         getCurrentUser = GetCurrentUserUseCase(userRepository),
         updateProfileImages = UpdateProfileImagesUseCase(userRepository),
+        getProfile = GetProfileUseCase(config.profileService),
+        publishProfile = PublishProfileUseCase(config.profileService),
         syncContacts = SyncContactsUseCase(friendRepository),
         getFriends = GetFriendsUseCase(friendRepository),
         manageFriends = ManageFriendsUseCase(friendRepository),

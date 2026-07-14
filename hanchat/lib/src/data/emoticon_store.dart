@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import '../core/entities.dart';
 import '../core/entitlement.dart';
+import '../core/profile.dart';
 import '../core/repositories.dart';
 import '../core/support_content.dart';
 
@@ -164,6 +165,38 @@ class StubSupportContentService implements SupportContentService {
       {required String adminToken}) async {
     _posts.putIfAbsent(channel, () => []).insert(0, post);
   }
+}
+
+/// 프로필 스텁 — 데모용 인메모리 (로컬 경로를 그대로 "URL"처럼 반환).
+/// 실서비스는 hanchat_firebase가 Storage 업로드 + Firestore 조회로 구현.
+class InMemoryProfileService implements ProfileService {
+  final _profiles = <String, PublicProfile>{};
+
+  InMemoryProfileService({List<PublicProfile> seed = const []}) {
+    for (final p in seed) {
+      _profiles[p.userId] = p;
+    }
+  }
+
+  @override
+  Future<void> publish({
+    required String userId,
+    required String nickname,
+    String? localProfilePath,
+    String? localCoverPath,
+  }) async {
+    _profiles[userId] = PublicProfile(
+      userId: userId,
+      nickname: nickname,
+      // 데모에선 로컬 경로를 그대로 사용 (실서비스는 Storage URL)
+      profileImageUrl: localProfilePath,
+      coverImageUrl: localCoverPath,
+      updatedAt: DateTime.now(),
+    );
+  }
+
+  @override
+  Future<PublicProfile?> fetch(String userId) async => _profiles[userId];
 }
 
 /// 관리자 스텁 — 데모용. 실서비스는 Cloud Function 검증으로 교체.

@@ -12,9 +12,11 @@
 library hanchat_firebase;
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:hanchat/hanchat.dart';
 
 /// ChatTransport의 Firebase 구현.
@@ -144,6 +146,61 @@ class FirebaseChatTransport implements ChatTransport {
         'deliveredAt': FieldValue.serverTimestamp(),
       });
     }
+  }
+}
+
+/// ProfileService의 Firebase 구현 — 프로필 사진·배경을 Storage에 올리고
+/// Firestore(profiles/{userId})에 URL을 저장. 조회는 캐시 권장(프로필은 자주 안 바뀜).
+class FirebaseProfileService implements ProfileService {
+  final FirebaseFirestore _db;
+  final FirebaseStorage _storage;
+
+  FirebaseProfileService({FirebaseFirestore? firestore, FirebaseStorage? storage})
+      : _db = firestore ?? FirebaseFirestore.instance,
+        _storage = storage ?? FirebaseStorage.instance;
+
+  @override
+  Future<void> publish({
+    required String userId,
+    required String nickname,
+    String? localProfilePath,
+    String? localCoverPath,
+  }) async {
+    await FirebaseChatTransport.signInIfNeeded();
+    final data = <String, dynamic>{
+      'nickname': nickname,
+      'updatedAt': FieldValue.serverTimestamp(),
+    };
+    if (localProfilePath != null) {
+      data['profileImageUrl'] =
+          await _upload('profiles/$userId/avatar.jpg', localProfilePath);
+    }
+    if (localCoverPath != null) {
+      data['coverImageUrl'] =
+          await _upload('profiles/$userId/cover.jpg', localCoverPath);
+    }
+    await _db.collection('profiles').doc(userId).set(data, SetOptions(merge: true));
+  }
+
+  Future<String> _upload(String path, String localPath) async {
+    final ref = _storage.ref(path);
+    await ref.putFile(File(localPath));
+    return ref.getDownloadURL();
+  }
+
+  @override
+  Future<PublicProfile?> fetch(String userId) async {
+    await FirebaseChatTransport.signInIfNeeded();
+    final doc = await _db.collection('profiles').doc(userId).get();
+    if (!doc.exists) return null;
+    final data = doc.data()!;
+    return PublicProfile(
+      userId: userId,
+      nickname: data['nickname'] as String? ?? '',
+      profileImageUrl: data['profileImageUrl'] as String?,
+      coverImageUrl: data['coverImageUrl'] as String?,
+      updatedAt: (data['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+    );
   }
 }
 

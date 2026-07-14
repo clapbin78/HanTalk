@@ -9,6 +9,7 @@ import '../data/client.dart';
 import '../data/read_receipt_setting.dart';
 import 'drawing.dart';
 import 'l10n.dart';
+import 'profile_view_page.dart';
 import 'theme.dart';
 import 'translatable_text.dart';
 
@@ -126,6 +127,20 @@ class ChatRoomViewModel extends ChangeNotifier {
     }
     return l10n.t('unknown');
   }
+
+  /// 1:1 상대 id (그룹이면 null)
+  String? get otherMemberId {
+    if (room.kind != RoomKind.direct) return null;
+    return room.memberIds.where((id) => id != myId).firstOrNull;
+  }
+
+  String directTitle(HanChatL10n l10n) {
+    final id = otherMemberId;
+    for (final f in friends) {
+      if (f.id == id) return f.displayName;
+    }
+    return l10n.t('unknown');
+  }
 }
 
 class ChatRoomPage extends StatefulWidget {
@@ -174,9 +189,19 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
         _scrollToBottomSoon();
         return Scaffold(
           appBar: AppBar(
-            title: Text(widget.room.kind == RoomKind.group
-                ? (widget.room.name ?? l10n.t('chats.group'))
-                : ''),
+            // 1:1은 상대 이름 표시 + 탭하면 상대 프로필. 그룹은 방 이름.
+            title: widget.room.kind == RoomKind.group
+                ? Text(widget.room.name ?? l10n.t('chats.group'))
+                : GestureDetector(
+                    onTap: () {
+                      final id = _vm.otherMemberId;
+                      if (id != null) {
+                        openProfile(context,
+                            userId: id, fallbackName: _vm.directTitle(l10n));
+                      }
+                    },
+                    child: Text(_vm.directTitle(l10n)),
+                  ),
           ),
           body: SafeArea(
             child: Column(children: [

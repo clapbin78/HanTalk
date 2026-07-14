@@ -140,6 +140,15 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
           profilePath: savedPath, coverPath: _me?.coverImagePath);
     }
     final me = await HanChat.client.getCurrentUser();
+    // 친구가 볼 수 있도록 서버에 발행 (실서비스는 Storage 업로드)
+    if (me != null) {
+      await HanChat.client.publishProfile(
+        userId: me.id,
+        nickname: me.nickname,
+        localProfilePath: me.profileImagePath,
+        localCoverPath: me.coverImagePath,
+      );
+    }
     if (mounted) setState(() => _me = me);
   }
 
@@ -166,6 +175,10 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   Future<void> _removeAll() async {
     await HanChat.client.updateProfileImages(profilePath: null, coverPath: null);
     final me = await HanChat.client.getCurrentUser();
+    if (me != null) {
+      await HanChat.client.publishProfile(
+          userId: me.id, nickname: me.nickname);
+    }
     if (mounted) setState(() => _me = me);
   }
 }
