@@ -1,0 +1,13 @@
+.DS_Store
+xcuserdata/
+*.xcodeproj
+!DemoApp/project.yml
+.build/
+DerivedData/
+GoogleService-Info.plist
+firebase/functions/node_modules/
+.swiftpm/
+.build-request
+scripts/build-latest.log
+scripts/build-errors.txt
+scripts/build-status.txt
