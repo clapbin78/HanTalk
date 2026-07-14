@@ -111,6 +111,7 @@ class HanChatClient {
   final RegisterUserUseCase registerUser;
   final GetCurrentUserUseCase getCurrentUser;
   final UpdateProfileImagesUseCase updateProfileImages;
+  final UpdateStatusMessageUseCase updateStatusMessage;
   final GetProfileUseCase getProfile;
   final PublishProfileUseCase publishProfile;
   final SyncContactsUseCase syncContacts;
@@ -156,6 +157,7 @@ class HanChatClient {
         registerUser = RegisterUserUseCase(userRepository),
         getCurrentUser = GetCurrentUserUseCase(userRepository),
         updateProfileImages = UpdateProfileImagesUseCase(userRepository),
+        updateStatusMessage = UpdateStatusMessageUseCase(userRepository),
         getProfile = GetProfileUseCase(config.profileService),
         publishProfile = PublishProfileUseCase(config.profileService),
         syncContacts = SyncContactsUseCase(friendRepository),

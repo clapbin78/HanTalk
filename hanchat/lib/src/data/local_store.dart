@@ -19,7 +19,7 @@ class LocalStore {
     final db = await f.openDatabase(
       path,
       options: OpenDatabaseOptions(
-        version: 4,
+        version: 5,
         // 같은 경로 재사용 시 인스턴스 공유 방지 (테스트 격리 + 명시적 수명 관리)
         singleInstance: false,
         onUpgrade: (db, oldVersion, _) async {
@@ -38,13 +38,17 @@ class LocalStore {
             await db.execute("ALTER TABLE users ADD COLUMN profile_path TEXT");
             await db.execute("ALTER TABLE users ADD COLUMN cover_path TEXT");
           }
+          if (oldVersion < 5) {
+            // v5: 상태메시지
+            await db.execute("ALTER TABLE users ADD COLUMN status_msg TEXT");
+          }
         },
         onCreate: (db, _) async {
           await db.execute('''
             CREATE TABLE users (
               id TEXT PRIMARY KEY, nickname TEXT NOT NULL,
               phone_hash TEXT NOT NULL, created_at TEXT NOT NULL,
-              profile_path TEXT, cover_path TEXT
+              profile_path TEXT, cover_path TEXT, status_msg TEXT
             )''');
           await db.execute('''
             CREATE TABLE friends (
@@ -91,6 +95,7 @@ class LocalStore {
       createdAt: DateTime.parse(r['created_at'] as String),
       profileImagePath: r['profile_path'] as String?,
       coverImagePath: r['cover_path'] as String?,
+      statusMessage: r['status_msg'] as String?,
     );
   }
 
@@ -103,6 +108,7 @@ class LocalStore {
           'created_at': user.createdAt.toIso8601String(),
           'profile_path': user.profileImagePath,
           'cover_path': user.coverImagePath,
+          'status_msg': user.statusMessage,
         },
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
@@ -112,6 +118,11 @@ class LocalStore {
       {String? profilePath, String? coverPath}) async {
     await _db.update('users',
         {'profile_path': profilePath, 'cover_path': coverPath});
+  }
+
+  /// 상태메시지 갱신.
+  Future<void> updateStatusMessage(String? status) async {
+    await _db.update('users', {'status_msg': status});
   }
 
   // ── Friends ───────────────────────────────────────────

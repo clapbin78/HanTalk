@@ -55,6 +55,10 @@ class DefaultUserRepository implements UserRepository {
   @override
   Future<void> updateProfileImages({String? profilePath, String? coverPath}) =>
       _store.updateProfileImages(profilePath: profilePath, coverPath: coverPath);
+
+  @override
+  Future<void> updateStatusMessage(String? status) =>
+      _store.updateStatusMessage(status);
 }
 
 class DefaultFriendRepository implements FriendRepository {

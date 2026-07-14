@@ -156,6 +156,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   final _input = TextEditingController();
   final _scroll = ScrollController();
   final _inputFocus = FocusNode();
+  final _drawingController = MiniDrawingController();
   bool _showCanvas = false; // 인라인 그림판 (키보드 자리)
 
   @override
@@ -244,17 +245,12 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
               ),
               _inputBar(l10n),
               // 인라인 미니 그림판 — 키보드 자리처럼 입력창 아래에서 펼쳐짐 (화면 절반까지)
+              // 보내기 버튼은 입력바에 하나만 (그림판 열려있으면 그림을 보냄)
               if (_showCanvas)
                 SizedBox(
                   height: (MediaQuery.of(context).size.height * 0.45)
                       .clamp(220.0, 420.0),
-                  child: MiniDrawingPanel(
-                    onSend: (payload) {
-                      setState(() => _showCanvas = false);
-                      _vm.sendDrawing(payload);
-                    },
-                    onClose: () => setState(() => _showCanvas = false),
-                  ),
+                  child: MiniDrawingPanel(controller: _drawingController),
                 ),
             ]),
           ),
@@ -316,13 +312,20 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
           ),
           IconButton(
             icon: const Icon(Icons.arrow_circle_up, size: 30),
-            onPressed: _input.text.trim().isEmpty
-                ? null
-                : () {
+            // 그림판이 열려 있으면 그림 전송, 아니면 텍스트 전송
+            onPressed: (_showCanvas || _input.text.trim().isNotEmpty)
+                ? () {
+                    if (_showCanvas) {
+                      final payload = _drawingController.take();
+                      if (payload != null) _vm.sendDrawing(payload);
+                      setState(() => _showCanvas = false);
+                      return;
+                    }
                     final text = _input.text;
                     _input.clear();
                     _vm.sendText(text);
-                  },
+                  }
+                : null,
           ),
         ]),
       ]),

@@ -14,6 +14,7 @@ class PublicProfile {
   /// 서버(Storage) 이미지 URL. 없으면 null → 이니셜 아바타 표시.
   final String? profileImageUrl;
   final String? coverImageUrl;
+  final String? statusMessage;
   final DateTime updatedAt;
 
   const PublicProfile({
@@ -21,6 +22,7 @@ class PublicProfile {
     required this.nickname,
     this.profileImageUrl,
     this.coverImageUrl,
+    this.statusMessage,
     required this.updatedAt,
   });
 }
@@ -34,6 +36,7 @@ abstract interface class ProfileService {
     required String nickname,
     String? localProfilePath,
     String? localCoverPath,
+    String? statusMessage,
   });
 
   /// 상대 프로필 조회 (없으면 null).
@@ -58,11 +61,13 @@ class PublishProfileUseCase {
     required String nickname,
     String? localProfilePath,
     String? localCoverPath,
+    String? statusMessage,
   }) =>
       _service.publish(
         userId: userId,
         nickname: nickname,
         localProfilePath: localProfilePath,
         localCoverPath: localCoverPath,
+        statusMessage: statusMessage,
       );
 }

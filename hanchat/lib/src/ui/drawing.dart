@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart' hide colorFromHex;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../core/entities.dart';
@@ -148,23 +149,25 @@ class _DrawingReplayViewState extends State<DrawingReplayView>
 // 채팅방에서는 키보드 자리처럼 입력창 아래에서 펼쳐진다 (화면 절반까지).
 // 이모티콘 업로드 플로우는 같은 패널을 전체 화면으로 감싸서 재사용.
 
-class MiniDrawingPanel extends StatefulWidget {
-  final ValueChanged<DrawingPayload> onSend;
-  final VoidCallback? onClose;
-  final String sendLabelKey; // 'send' 또는 'next'
+/// 부모(채팅 입력바)가 그림판의 현재 그림을 꺼낼 수 있게 하는 컨트롤러.
+/// 보내기 버튼을 그림판이 아니라 입력바에 하나만 두기 위한 다리.
+class MiniDrawingController {
+  DrawingPayload? Function()? _take;
 
-  const MiniDrawingPanel({
-    super.key,
-    required this.onSend,
-    this.onClose,
-    this.sendLabelKey = 'send',
-  });
+  /// 현재 그림을 payload로 꺼내고 캔버스를 비운다. 그림 없으면 null.
+  DrawingPayload? take() => _take?.call();
+}
+
+class MiniDrawingPanel extends StatefulWidget {
+  final MiniDrawingController controller;
+  const MiniDrawingPanel({super.key, required this.controller});
 
   @override
   State<MiniDrawingPanel> createState() => _MiniDrawingPanelState();
 }
 
 class _MiniDrawingPanelState extends State<MiniDrawingPanel> {
+  // 빠른 선택용 기본 스와치 + '+' 로 색상환
   static const _palette = [
     '#1C1C1E', '#FF3B30', '#FF9500', '#FFCC00', '#34C759', '#007AFF', '#AF52DE',
   ];
@@ -176,43 +179,60 @@ class _MiniDrawingPanelState extends State<MiniDrawingPanel> {
   double _penWidth = 4;
   Size _canvasSize = Size.zero;
 
-  bool get _isEmpty => _strokes.isEmpty && _currentPoints.isEmpty;
+  @override
+  void initState() {
+    super.initState();
+    widget.controller._take = _take;
+  }
+
+  DrawingPayload? _take() {
+    _endStroke();
+    if (_strokes.isEmpty) return null;
+    final payload = _currentPayload();
+    setState(() {
+      _strokes.clear();
+      _currentPoints = [];
+      _startedAt = null;
+    });
+    return payload;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = HanChatL10n.of(context);
     final theme = HanChatTheme.of(context);
 
     return Container(
       color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
       padding: const EdgeInsets.fromLTRB(10, 6, 10, 10),
       child: Column(children: [
-        // 컨트롤 한 줄: 팔레트 · 두께 · undo · 닫기 · 보내기
+        // 1줄: 색상 스와치들 + 색상환(+) + undo
         Row(children: [
-          for (final hex in _palette) ...[
-            GestureDetector(
-              onTap: () => setState(() => _colorHex = hex),
-              child: Container(
-                width: 24,
-                height: 24,
-                decoration: BoxDecoration(
-                  color: colorFromHex(hex),
-                  shape: BoxShape.circle,
-                  border: hex == _colorHex
-                      ? Border.all(color: theme.accent, width: 2.5)
-                      : null,
-                ),
-              ),
-            ),
-            const SizedBox(width: 5),
-          ],
           Expanded(
-            child: Slider(
-              value: _penWidth,
-              min: 1,
-              max: 20,
-              activeColor: theme.accent,
-              onChanged: (v) => setState(() => _penWidth = v),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(children: [
+                for (final hex in _palette) ...[
+                  _swatch(hex, theme),
+                  const SizedBox(width: 6),
+                ],
+                // 색상환 버튼 (현재 색 표시 + 탭하면 피커)
+                GestureDetector(
+                  onTap: _openColorPicker,
+                  child: Container(
+                    width: 26,
+                    height: 26,
+                    decoration: BoxDecoration(
+                      gradient: const SweepGradient(colors: [
+                        Colors.red, Colors.yellow, Colors.green,
+                        Colors.cyan, Colors.blue, Colors.purple, Colors.red,
+                      ]),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 2),
+                    ),
+                    child: const Icon(Icons.add, size: 14, color: Colors.white),
+                  ),
+                ),
+              ]),
             ),
           ),
           IconButton(
@@ -222,22 +242,33 @@ class _MiniDrawingPanelState extends State<MiniDrawingPanel> {
                 ? null
                 : () => setState(() => _strokes.removeLast()),
           ),
-          if (widget.onClose != null)
-            IconButton(
-              icon: const Icon(Icons.keyboard_arrow_down, size: 22),
-              visualDensity: VisualDensity.compact,
-              tooltip: l10n.t('close'),
-              onPressed: widget.onClose,
+        ]),
+        // 2줄: 펜 두께
+        Row(children: [
+          const Icon(Icons.line_weight, size: 18),
+          Expanded(
+            child: Slider(
+              value: _penWidth,
+              min: 1,
+              max: 20,
+              activeColor: theme.accent,
+              onChanged: (v) => setState(() => _penWidth = v),
             ),
-          IconButton(
-            icon: Icon(Icons.send, size: 20, color: _isEmpty ? null : theme.accent),
-            visualDensity: VisualDensity.compact,
-            tooltip: l10n.t(widget.sendLabelKey),
-            onPressed: _isEmpty ? null : _finish,
+          ),
+          Container(
+            width: 26,
+            alignment: Alignment.center,
+            child: Container(
+              width: _penWidth.clamp(4, 22),
+              height: _penWidth.clamp(4, 22),
+              decoration: BoxDecoration(
+                color: colorFromHex(_colorHex),
+                shape: BoxShape.circle,
+              ),
+            ),
           ),
         ]),
-        const SizedBox(height: 6),
-        // 캔버스 — 남는 공간 전부
+        const SizedBox(height: 4),
         Expanded(
           child: LayoutBuilder(builder: (context, constraints) {
             _canvasSize = constraints.biggest;
@@ -264,6 +295,52 @@ class _MiniDrawingPanelState extends State<MiniDrawingPanel> {
     );
   }
 
+  Widget _swatch(String hex, HanChatTheme theme) => GestureDetector(
+        onTap: () => setState(() => _colorHex = hex),
+        child: Container(
+          width: 26,
+          height: 26,
+          decoration: BoxDecoration(
+            color: colorFromHex(hex),
+            shape: BoxShape.circle,
+            border: hex == _colorHex
+                ? Border.all(color: theme.accent, width: 2.5)
+                : Border.all(color: Colors.grey.shade300),
+          ),
+        ),
+      );
+
+  Future<void> _openColorPicker() async {
+    final l10n = HanChatL10n.of(context);
+    var picked = colorFromHex(_colorHex);
+    final result = await showDialog<Color>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        content: SingleChildScrollView(
+          child: ColorPicker(
+            pickerColor: picked,
+            onColorChanged: (c) => picked = c,
+            enableAlpha: false,
+            labelTypes: const [],
+            pickerAreaHeightPercent: 0.7,
+          ),
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(l10n.t('cancel'))),
+          TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(picked),
+              child: Text(l10n.t('ok'))),
+        ],
+      ),
+    );
+    if (result != null) {
+      final hex = '#${(result.toARGB32() & 0xFFFFFF).toRadixString(16).padLeft(6, '0').toUpperCase()}';
+      setState(() => _colorHex = hex);
+    }
+  }
+
   DrawingPayload _currentPayload() => DrawingPayload(
         canvasWidth: _max(_canvasSize.width, 1),
         canvasHeight: _max(_canvasSize.height, 1),
@@ -287,29 +364,24 @@ class _MiniDrawingPanelState extends State<MiniDrawingPanel> {
 
   void _endStroke() {
     if (_currentPoints.isEmpty) return;
-    setState(() {
-      _strokes.add(
-          Stroke(colorHex: _colorHex, width: _penWidth, points: _currentPoints));
-      _currentPoints = [];
-    });
-  }
-
-  void _finish() {
-    _endStroke();
-    final payload = _currentPayload();
-    setState(() {
-      _strokes.clear();
-      _currentPoints = [];
-      _startedAt = null;
-    });
-    widget.onSend(payload);
+    _strokes.add(
+        Stroke(colorHex: _colorHex, width: _penWidth, points: _currentPoints));
+    _currentPoints = [];
+    if (mounted) setState(() {});
   }
 }
 
-/// 전체 화면 그림판 — 이모티콘 업로드 플로우용 (내부는 MiniDrawingPanel 재사용).
-class DrawingCanvasPage extends StatelessWidget {
+/// 전체 화면 그림판 — 이모티콘 업로드 플로우용. 확정 버튼은 앱바 우상단.
+class DrawingCanvasPage extends StatefulWidget {
   final String confirmLabelKey;
   const DrawingCanvasPage({super.key, this.confirmLabelKey = 'send'});
+
+  @override
+  State<DrawingCanvasPage> createState() => _DrawingCanvasPageState();
+}
+
+class _DrawingCanvasPageState extends State<DrawingCanvasPage> {
+  final _controller = MiniDrawingController();
 
   @override
   Widget build(BuildContext context) {
@@ -322,13 +394,18 @@ class DrawingCanvasPage extends StatelessWidget {
           child: Text(l10n.t('cancel')),
         ),
         leadingWidth: 80,
+        actions: [
+          TextButton(
+            onPressed: () {
+              final payload = _controller.take();
+              if (payload != null) Navigator.of(context).pop(payload);
+            },
+            child: Text(l10n.t(widget.confirmLabelKey),
+                style: const TextStyle(fontWeight: FontWeight.bold)),
+          ),
+        ],
       ),
-      body: SafeArea(
-        child: MiniDrawingPanel(
-          sendLabelKey: confirmLabelKey,
-          onSend: (payload) => Navigator.of(context).pop(payload),
-        ),
-      ),
+      body: SafeArea(child: MiniDrawingPanel(controller: _controller)),
     );
   }
 }

@@ -8,6 +8,9 @@ abstract interface class UserRepository {
 
   /// 프로필/배경 사진 경로 갱신 (기기 로컬 전용, 서버 미전송).
   Future<void> updateProfileImages({String? profilePath, String? coverPath});
+
+  /// 상태메시지 갱신.
+  Future<void> updateStatusMessage(String? status);
 }
 
 abstract interface class FriendRepository {

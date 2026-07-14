@@ -54,6 +54,11 @@ class HanTalkApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: _brand),
         useMaterial3: true,
+        // iOS 느낌: 화면 전환 애니메이션을 쿠퍼티노(밀어서 넘기기)로
+        pageTransitionsTheme: const PageTransitionsTheme(builders: {
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+        }),
       ),
       // 다국어: 기기 언어 자동 (ko/en/ja/zh)
       localizationsDelegates: const [

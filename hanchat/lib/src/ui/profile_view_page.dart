@@ -44,51 +44,77 @@ class _ProfileViewPageState extends State<ProfileViewPage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = HanChatTheme.of(context);
+    const coverHeight = 150.0;
+    const avatarRadius = 44.0;
 
     return ListenableBuilder(
       listenable: _vm,
       builder: (context, _) {
         final profile = _vm.profile;
         return Scaffold(
-          body: CustomScrollView(slivers: [
-            SliverAppBar(
-              expandedHeight: 240,
-              pinned: true,
-              backgroundColor: theme.accent,
-              flexibleSpace: FlexibleSpaceBar(
-                background: _cover(profile),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Transform.translate(
-                offset: const Offset(0, -44),
-                child: Column(children: [
-                  CircleAvatar(
-                    radius: 46,
-                    backgroundColor: Colors.white,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            foregroundColor: Colors.white,
+          ),
+          extendBodyBehindAppBar: true,
+          body: ListView(padding: EdgeInsets.zero, children: [
+            // 배경 + 아바타 (아바타가 배경 아래로 살짝 걸침)
+            SizedBox(
+              height: coverHeight + avatarRadius,
+              child: Stack(clipBehavior: Clip.none, children: [
+                SizedBox(
+                  height: coverHeight,
+                  width: double.infinity,
+                  child: _cover(profile),
+                ),
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Center(
                     child: CircleAvatar(
-                      radius: 42,
-                      backgroundColor: Colors.grey.shade300,
-                      backgroundImage: _imageProvider(profile?.profileImageUrl),
-                      child: _imageProvider(profile?.profileImageUrl) == null
-                          ? Text(_vm.displayName.characters.first,
-                              style: const TextStyle(
-                                  fontSize: 30, color: Colors.black54))
-                          : null,
+                      radius: avatarRadius + 4,
+                      backgroundColor:
+                          Theme.of(context).scaffoldBackgroundColor,
+                      child: CircleAvatar(
+                        radius: avatarRadius,
+                        backgroundColor: Colors.grey.shade300,
+                        backgroundImage:
+                            _imageProvider(profile?.profileImageUrl),
+                        child: _imageProvider(profile?.profileImageUrl) == null
+                            ? Text(_vm.displayName.characters.first,
+                                style: const TextStyle(
+                                    fontSize: 30, color: Colors.black54))
+                            : null,
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  Text(_vm.displayName,
-                      style: const TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.bold)),
-                  if (_vm.loading) ...[
-                    const SizedBox(height: 20),
-                    const CircularProgressIndicator(),
-                  ],
-                ]),
-              ),
+                ),
+              ]),
             ),
+            const SizedBox(height: 12),
+            Center(
+              child: Text(_vm.displayName,
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.bold)),
+            ),
+            if (profile?.statusMessage case final status?
+                when status.isNotEmpty) ...[
+              const SizedBox(height: 6),
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: Text(status,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.grey.shade600)),
+                ),
+              ),
+            ],
+            if (_vm.loading) ...[
+              const SizedBox(height: 24),
+              const Center(child: CircularProgressIndicator()),
+            ],
           ]),
         );
       },

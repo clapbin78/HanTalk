@@ -78,23 +78,54 @@ class _MainTabsState extends State<_MainTabs> {
   @override
   Widget build(BuildContext context) {
     final l10n = HanChatL10n.of(context);
+    final theme = HanChatTheme.of(context);
 
     // 하단바는 친구·채팅 2개. 설정은 각 탭 앱바 우상단 아이콘으로.
     // 이모티콘은 탭에서 빠지고 설정 화면 안으로 들어감.
+    // iOS 느낌: 상단 얇은 구분선 + 아이콘/라벨, 선택 색만 강조 (Material pill 제거).
     return Scaffold(
       body: IndexedStack(index: _index, children: const [
         FriendsPage(),
         ChatListPage(),
       ]),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _index,
-        onDestinationSelected: (index) => setState(() => _index = index),
-        destinations: [
-          NavigationDestination(
-              icon: const Icon(Icons.people), label: l10n.t('tab.friends')),
-          NavigationDestination(
-              icon: const Icon(Icons.chat_bubble), label: l10n.t('tab.chats')),
-        ],
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          border: Border(
+            top: BorderSide(color: Colors.grey.withValues(alpha: 0.25)),
+          ),
+        ),
+        child: SafeArea(
+          top: false,
+          child: SizedBox(
+            height: 52,
+            child: Row(children: [
+              _tab(0, Icons.people_outline, Icons.people, l10n.t('tab.friends'), theme),
+              _tab(1, Icons.chat_bubble_outline, Icons.chat_bubble,
+                  l10n.t('tab.chats'), theme),
+            ]),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _tab(int index, IconData icon, IconData activeIcon, String label,
+      HanChatTheme theme) {
+    final selected = _index == index;
+    final color = selected ? theme.accent : Colors.grey;
+    return Expanded(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => setState(() => _index = index),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(selected ? activeIcon : icon, color: color, size: 24),
+            const SizedBox(height: 2),
+            Text(label, style: TextStyle(color: color, fontSize: 11)),
+          ],
+        ),
       ),
     );
   }

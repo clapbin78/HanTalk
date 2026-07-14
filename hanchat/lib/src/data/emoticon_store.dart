@@ -184,6 +184,7 @@ class InMemoryProfileService implements ProfileService {
     required String nickname,
     String? localProfilePath,
     String? localCoverPath,
+    String? statusMessage,
   }) async {
     _profiles[userId] = PublicProfile(
       userId: userId,
@@ -191,6 +192,7 @@ class InMemoryProfileService implements ProfileService {
       // 데모에선 로컬 경로를 그대로 사용 (실서비스는 Storage URL)
       profileImageUrl: localProfilePath,
       coverImageUrl: localCoverPath,
+      statusMessage: statusMessage,
       updatedAt: DateTime.now(),
     );
   }

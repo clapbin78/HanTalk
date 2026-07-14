@@ -100,6 +100,20 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                 title: Text(l10n.t('nickname')),
                 trailing: Text(me.nickname),
               ),
+              ListTile(
+                title: Text(l10n.t('profile.status')),
+                subtitle: Text(
+                  me.statusMessage?.isNotEmpty == true
+                      ? me.statusMessage!
+                      : l10n.t('profile.statusHint'),
+                  style: TextStyle(
+                      color: me.statusMessage?.isNotEmpty == true
+                          ? null
+                          : Colors.grey.shade500),
+                ),
+                trailing: const Icon(Icons.edit, size: 18),
+                onTap: () => _editStatus(me),
+              ),
               if (me.profileImagePath != null || me.coverImagePath != null)
                 ListTile(
                   leading: const Icon(Icons.delete_outline, color: Colors.red),
@@ -139,14 +153,48 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
       await HanChat.client.updateProfileImages(
           profilePath: savedPath, coverPath: _me?.coverImagePath);
     }
+    await _refreshAndPublish();
+  }
+
+  Future<void> _editStatus(User me) async {
+    final l10n = HanChatL10n.of(context);
+    final controller = TextEditingController(text: me.statusMessage ?? '');
+    final result = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.t('profile.status')),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          maxLength: 60,
+          decoration: InputDecoration(hintText: l10n.t('profile.statusHint')),
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(l10n.t('cancel'))),
+          TextButton(
+              onPressed: () =>
+                  Navigator.of(dialogContext).pop(controller.text),
+              child: Text(l10n.t('ok'))),
+        ],
+      ),
+    );
+    if (result == null || !mounted) return;
+    await HanChat.client.updateStatusMessage(result);
+    await _refreshAndPublish();
+  }
+
+  /// 로컬 갱신 후 서버에 발행 (친구가 볼 수 있게).
+  Future<void> _refreshAndPublish() async {
     final me = await HanChat.client.getCurrentUser();
-    // 친구가 볼 수 있도록 서버에 발행 (실서비스는 Storage 업로드)
     if (me != null) {
       await HanChat.client.publishProfile(
         userId: me.id,
         nickname: me.nickname,
         localProfilePath: me.profileImagePath,
         localCoverPath: me.coverImagePath,
+        statusMessage: me.statusMessage,
       );
     }
     if (mounted) setState(() => _me = me);
@@ -174,11 +222,6 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
 
   Future<void> _removeAll() async {
     await HanChat.client.updateProfileImages(profilePath: null, coverPath: null);
-    final me = await HanChat.client.getCurrentUser();
-    if (me != null) {
-      await HanChat.client.publishProfile(
-          userId: me.id, nickname: me.nickname);
-    }
-    if (mounted) setState(() => _me = me);
+    await _refreshAndPublish();
   }
 }

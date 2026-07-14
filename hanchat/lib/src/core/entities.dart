@@ -14,6 +14,9 @@ class User {
   final String? profileImagePath;
   final String? coverImagePath;
 
+  /// 상태메시지 (한 줄 소개). 프로필과 함께 서버에 발행돼 친구가 본다.
+  final String? statusMessage;
+
   const User({
     required this.id,
     required this.nickname,
@@ -21,15 +24,21 @@ class User {
     required this.createdAt,
     this.profileImagePath,
     this.coverImagePath,
+    this.statusMessage,
   });
 
-  User copyWith({String? profileImagePath, String? coverImagePath}) => User(
+  User copyWith(
+          {String? profileImagePath,
+          String? coverImagePath,
+          String? statusMessage}) =>
+      User(
         id: id,
         nickname: nickname,
         phoneNumberHash: phoneNumberHash,
         createdAt: createdAt,
         profileImagePath: profileImagePath ?? this.profileImagePath,
         coverImagePath: coverImagePath ?? this.coverImagePath,
+        statusMessage: statusMessage ?? this.statusMessage,
       );
 
   // 서버로 나가는 JSON에는 이미지 경로를 포함하지 않는다 (로컬 전용).

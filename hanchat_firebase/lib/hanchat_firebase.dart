@@ -165,10 +165,12 @@ class FirebaseProfileService implements ProfileService {
     required String nickname,
     String? localProfilePath,
     String? localCoverPath,
+    String? statusMessage,
   }) async {
     await FirebaseChatTransport.signInIfNeeded();
     final data = <String, dynamic>{
       'nickname': nickname,
+      'statusMessage': statusMessage,
       'updatedAt': FieldValue.serverTimestamp(),
     };
     if (localProfilePath != null) {
@@ -199,6 +201,7 @@ class FirebaseProfileService implements ProfileService {
       nickname: data['nickname'] as String? ?? '',
       profileImageUrl: data['profileImageUrl'] as String?,
       coverImageUrl: data['coverImageUrl'] as String?,
+      statusMessage: data['statusMessage'] as String?,
       updatedAt: (data['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }

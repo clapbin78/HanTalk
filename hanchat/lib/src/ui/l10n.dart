@@ -75,6 +75,8 @@ class HanChatL10n {
     'profile.create': ['프로필 만들기', 'Create Profile', 'プロフィール作成', '创建个人资料'],
     'profile.edit': ['프로필 수정', 'Edit Profile', 'プロフィール編集', '编辑资料'],
     'profile.removePhotos': ['사진 모두 지우기', 'Remove all photos', '写真をすべて削除', '删除所有照片'],
+    'profile.status': ['상태메시지', 'Status Message', 'ステータスメッセージ', '状态消息'],
+    'profile.statusHint': ['상태메시지를 입력해 보세요', 'Set a status message', 'ステータスメッセージを入力', '设置状态消息'],
     'nickname': ['닉네임', 'Nickname', 'ニックネーム', '昵称'],
     'phone.placeholder': ['전화번호 (예: 01012345678)', 'Phone number (e.g. 5551234567)', '電話番号（例: 09012345678）', '电话号码（例：13800138000）'],
     'phone.privacy': [

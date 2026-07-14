@@ -32,6 +32,14 @@ class UpdateProfileImagesUseCase {
       _users.updateProfileImages(profilePath: profilePath, coverPath: coverPath);
 }
 
+class UpdateStatusMessageUseCase {
+  final UserRepository _users;
+  const UpdateStatusMessageUseCase(this._users);
+
+  Future<void> call(String? status) =>
+      _users.updateStatusMessage(status?.trim().isEmpty ?? true ? null : status!.trim());
+}
+
 class SyncContactsUseCase {
   final FriendRepository _friends;
   const SyncContactsUseCase(this._friends);
