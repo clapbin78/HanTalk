@@ -61,6 +61,7 @@ struct SettingsView: View {
     let client: HanChatClient
     let me: User
     @State private var presentedPolicy: PolicyItem?
+    @AppStorage("HanChatDrawingReplayEnabled") private var drawingReplayEnabled = true
 
     struct PolicyItem: Identifiable {
         let id = UUID()
@@ -73,6 +74,12 @@ struct SettingsView: View {
             Form {
                 Section("내 프로필") {
                     LabeledContent("닉네임", value: me.nickname)
+                }
+                Section("채팅") {
+                    Toggle("그림 그리는 과정 재생", isOn: $drawingReplayEnabled)
+                    Text("끄면 완성된 그림만 바로 표시돼요.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
                 }
                 Section("메시지 보관") {
                     LabeledContent("자동 삭제", value: retentionDescription)

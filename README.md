@@ -71,8 +71,8 @@ try HanChat.configure(HanChatConfiguration(
     localRetention: .oneDay,                                 // 또는 .keepForever
     // 약관은 호스트 앱 소유 — nil이면 SDK가 동의 화면을 건너뜀
     // (기존 앱: 자체 약관에 채팅 조항만 추가하고 nil 유지)
-    privacyPolicyURL: URL(string: "https://<아이디>.github.io/hantalk-policy/privacy.html"),
-    termsOfServiceURL: URL(string: "https://<아이디>.github.io/hantalk-policy/terms.html")
+    privacyPolicyURL: URL(string: "https://clapbin78.github.io/HanTalk/privacy.html"),
+    termsOfServiceURL: URL(string: "https://clapbin78.github.io/HanTalk/terms.html")
 ))
 
 // 2-a. SwiftUI

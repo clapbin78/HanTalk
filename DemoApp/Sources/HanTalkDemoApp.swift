@@ -26,8 +26,8 @@ struct HanTalkDemoApp: App {
             try HanChat.configure(HanChatConfiguration(
                 transport: transport,
                 localRetention: .oneDay,   // 기기 저장 메시지 24시간 자동삭제
-                privacyPolicyURL: URL(string: "https://<깃헙아이디>.github.io/hantalk-policy/privacy.html"),
-                termsOfServiceURL: URL(string: "https://<깃헙아이디>.github.io/hantalk-policy/terms.html"),
+                privacyPolicyURL: URL(string: "https://clapbin78.github.io/HanTalk/privacy.html"),
+                termsOfServiceURL: URL(string: "https://clapbin78.github.io/HanTalk/terms.html"),
                 serviceName: "한톡",
                 requestsAppTracking: false // 광고/추적 SDK 없음 → ATT 요청 안 함
             ))

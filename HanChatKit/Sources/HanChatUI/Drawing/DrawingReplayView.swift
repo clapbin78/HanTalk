@@ -9,6 +9,9 @@ import HanChatCore
 struct DrawingReplayView: View {
     let payload: DrawingPayload
 
+    /// 그리는 과정 재생 온/오프 — 설정 탭에서 변경 가능, 기본 켜짐.
+    /// 끄면 완성된 그림만 바로 표시된다.
+    @AppStorage("HanChatDrawingReplayEnabled") private var replayEnabled = true
     @State private var replayStartedAt: Date?
 
     var body: some View {
@@ -53,19 +56,21 @@ struct DrawingReplayView: View {
             }
         }
         .overlay(alignment: .bottomTrailing) {
-            Button {
-                replayStartedAt = .now
-            } label: {
-                Image(systemName: "play.circle.fill")
-                    .font(.title3)
-                    .foregroundStyle(.secondary)
-                    .padding(6)
+            if replayEnabled {
+                Button {
+                    replayStartedAt = .now
+                } label: {
+                    Image(systemName: "play.circle.fill")
+                        .font(.title3)
+                        .foregroundStyle(.secondary)
+                        .padding(6)
+                }
+                .accessibilityLabel("그리는 과정 재생")
             }
-            .accessibilityLabel("그리는 과정 재생")
         }
         .onAppear {
-            // 도착 직후 1회 자동 재생
-            if replayStartedAt == nil {
+            // 재생 옵션이 켜져 있으면 도착 직후 1회 자동 재생
+            if replayEnabled, replayStartedAt == nil {
                 replayStartedAt = .now
             }
         }

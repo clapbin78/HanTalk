@@ -7,10 +7,11 @@ Pod::Spec.new do |s|
     1:1/그룹 채팅, 연락처 기반 친구 찾기(전체/선택 등록), 벡터 그림 메시지(그리기 과정 재생),
     서버 미보관(우체통 모델) + 기기 24시간 자동삭제. 백엔드는 프로토콜로 교체 가능(Firebase 어댑터 제공).
   DESC
-  s.homepage         = 'https://github.com/<깃헙아이디>/HanChatKit'
+  s.homepage         = 'https://github.com/clapbin78/HanTalk'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { '천재' => 'clapbinbox@gmail.com' }
-  s.source           = { :git => 'https://github.com/<깃헙아이디>/HanChatKit.git', :tag => s.version.to_s }
+  # 주의: CocoaPods/SPM 정식 배포 시 HanChatKit을 별도 저장소로 분리 필요 (Package.swift가 루트여야 함)
+  s.source           = { :git => 'https://github.com/clapbin78/HanChatKit.git', :tag => s.version.to_s }
   s.swift_version    = '5.9'
   s.ios.deployment_target = '17.0'
 
