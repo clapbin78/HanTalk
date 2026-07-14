@@ -26,5 +26,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
+  # 호스트 머신에서 sqflite 통합 테스트 (FFI sqlite)
+  sqflite_common_ffi: ^2.3.0
 
 flutter: {}
