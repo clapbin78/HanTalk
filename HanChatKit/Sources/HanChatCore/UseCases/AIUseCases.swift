@@ -1,5 +1,33 @@
 import Foundation
 
+// MARK: - 번역 (핵심 기능 — 플래그 없이 항상 제공)
+//
+// 기본: 시스템 온디바이스 번역(iOS 18+, 무료) — UI 레이어가 처리.
+// 교체: HanChatConfiguration.translationService에 AI 번역 구현을 주입하면
+//       모든 번역이 그 서비스를 경유한다 (Phase 4 — 품질↑, 비용 발생).
+
+/// 번역 백엔드 추상화. Core는 어떤 번역 엔진인지 모른다.
+public protocol TranslationService: Sendable {
+    func translate(_ text: String, to languageCode: String) async throws -> String
+}
+
+public struct TranslateTextUseCase: Sendable {
+    let service: any TranslationService
+
+    public init(service: any TranslationService) {
+        self.service = service
+    }
+
+    public func callAsFunction(
+        _ text: String,
+        to languageCode: String = Locale.current.language.languageCode?.identifier ?? "en"
+    ) async throws -> String {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return text }
+        return try await service.translate(trimmed, to: languageCode)
+    }
+}
+
 // MARK: - AI 어시스턴트 (🚩 aiAssistantEnabled 플래그 뒤에 준비된 기능)
 //
 // 유료 이모티콘과 같은 전략: 구조·로직·테스트는 처음부터 완성해두고
@@ -10,8 +38,6 @@ import Foundation
 public protocol AIAssistantService: Sendable {
     /// 최근 대화 맥락으로 답장 후보 생성 (사용자 언어로)
     func suggestReplies(context: [Message], languageCode: String) async throws -> [String]
-    /// 수신 메시지 번역 (글로벌 채팅 대비)
-    func translate(_ text: String, to languageCode: String) async throws -> String
 }
 
 public struct SuggestRepliesUseCase: Sendable {
@@ -32,25 +58,5 @@ public struct SuggestRepliesUseCase: Sendable {
         guard !context.isEmpty else { return [] }
         // 최근 10개만 전달 — 토큰(비용) 절약
         return try await ai.suggestReplies(context: Array(context.suffix(10)), languageCode: languageCode)
-    }
-}
-
-public struct TranslateMessageUseCase: Sendable {
-    let ai: any AIAssistantService
-    let enabled: Bool
-
-    public init(ai: any AIAssistantService, enabled: Bool) {
-        self.ai = ai
-        self.enabled = enabled
-    }
-
-    public func callAsFunction(
-        _ text: String,
-        to languageCode: String = Locale.current.language.languageCode?.identifier ?? "en"
-    ) async throws -> String {
-        guard enabled else { throw HanChatError.featureDisabled }
-        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return text }
-        return try await ai.translate(trimmed, to: languageCode)
     }
 }

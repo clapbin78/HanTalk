@@ -36,16 +36,17 @@ final class AIAssistantTests: XCTestCase {
         XCTAssertTrue(suggestions.isEmpty)
     }
 
-    func test_번역_플래그_게이트와_동작() async throws {
-        let disabled = TranslateMessageUseCase(ai: StubAIAssistantService(), enabled: false)
-        do {
-            _ = try await disabled("안녕하세요", to: "en")
-            XCTFail("차단돼야 함")
-        } catch {}
+    // 번역은 플래그 없는 핵심 기능 — 커스텀 서비스 주입 경로 검증
+    // (기본 경로는 iOS 18 시스템 온디바이스 번역이라 서버 계약이 없음)
+    func test_번역_UseCase_커스텀_서비스_경유() async throws {
+        let translate = TranslateTextUseCase(service: StubTranslationService())
 
-        let enabled = TranslateMessageUseCase(ai: StubAIAssistantService(), enabled: true)
-        let result = try await enabled("안녕하세요", to: "en")
+        let result = try await translate("안녕하세요", to: "en")
         XCTAssertTrue(result.contains("안녕하세요"))
         XCTAssertTrue(result.contains("en"))
+
+        // 빈 문자열은 서비스 호출 없이 원문 반환
+        let empty = try await translate("   ", to: "en")
+        XCTAssertEqual(empty, "   ")
     }
 }

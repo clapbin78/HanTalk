@@ -98,7 +98,7 @@ struct FriendListView: View {
                             HStack {
                                 AvatarView(name: friend.displayName)
                                 VStack(alignment: .leading) {
-                                    Text(friend.displayName)
+                                    TranslatableText(text: friend.displayName)
                                     if friend.localName != nil, friend.localName != friend.nickname {
                                         Text(friend.nickname)
                                             .font(.caption)

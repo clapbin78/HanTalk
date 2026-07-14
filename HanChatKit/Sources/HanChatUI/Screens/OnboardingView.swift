@@ -11,17 +11,22 @@ struct OnboardingView: View {
     @StateObject private var permissions = PermissionCoordinator()
     @State private var step: Step
 
-    enum Step { case consent, profile, notifications }
+    enum Step { case permissionNotice, consent, profile, notifications }
 
     init(client: HanChatClient, onComplete: @escaping () -> Void) {
         self.client = client
         self.onComplete = onComplete
-        _step = State(initialValue: client.configuration.hasPolicies ? .consent : .profile)
+        // 접근권한 안내가 항상 첫 화면 (한국 정보통신망법 필수 + 글로벌에도 투명성 관점 우수)
+        _step = State(initialValue: .permissionNotice)
     }
 
     var body: some View {
         NavigationStack {
             switch step {
+            case .permissionNotice:
+                PermissionNoticeStepView {
+                    step = client.configuration.hasPolicies ? .consent : .profile
+                }
             case .consent:
                 ConsentStepView(configuration: client.configuration) {
                     step = .profile
@@ -42,6 +47,67 @@ struct OnboardingView: View {
                 }
             }
         }
+    }
+}
+
+// MARK: - 0. 앱 접근 권한 안내 (한국 정보통신망법 제22조의2 대응 — 전 지역 공통 노출)
+
+private struct PermissionNoticeStepView: View {
+    let onNext: () -> Void
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Spacer()
+            VStack(spacing: 8) {
+                Image(systemName: "checkmark.shield.fill")
+                    .font(.system(size: 48))
+                    .foregroundStyle(.tint)
+                Text(L.permissionNoticeTitle)
+                    .font(.title2.bold())
+                Text(L.permissionNoticeSubtitle)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.bottom, 28)
+
+            VStack(spacing: 14) {
+                noticeRow(icon: "bell.fill", title: L.permNotifTitle, detail: L.permNotifDesc)
+                noticeRow(icon: "person.crop.circle.fill", title: L.permContactsTitle, detail: L.permContactsDesc)
+            }
+            .padding(.horizontal)
+
+            Text(L.permissionNoticeFooter)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 24)
+                .padding(.top, 20)
+
+            Spacer()
+
+            Button(action: onNext) {
+                Text(L.ok).frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+            .padding(.horizontal)
+            .padding(.bottom, 24)
+        }
+    }
+
+    private func noticeRow(icon: String, title: String, detail: String) -> some View {
+        HStack(spacing: 14) {
+            Image(systemName: icon)
+                .font(.title3)
+                .foregroundStyle(.tint)
+                .frame(width: 36)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title).font(.subheadline.bold())
+                Text(detail).font(.footnote).foregroundStyle(.secondary)
+            }
+            Spacer()
+        }
+        .padding(14)
+        .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 12))
     }
 }
 

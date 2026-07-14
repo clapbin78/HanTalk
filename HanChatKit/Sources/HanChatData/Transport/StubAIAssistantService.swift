@@ -13,9 +13,14 @@ public struct StubAIAssistantService: AIAssistantService {
         // 스텁은 고정 응답 (실 AI는 사용자 언어로 답하므로 별도 번역 불필요).
         ["👍", "OK!", "😊"]
     }
+}
+
+/// 번역 스텁 — 테스트/데모용. Phase 4에서 AI 번역 구현으로 교체 가능.
+/// (기본값은 nil → UI가 iOS 18 시스템 온디바이스 번역을 사용)
+public struct StubTranslationService: TranslationService {
+    public init() {}
 
     public func translate(_ text: String, to languageCode: String) async throws -> String {
-        // 실제 구현에서는 번역 API 호출. 스텁은 표시만.
         "[\(languageCode)] \(text)"
     }
 }

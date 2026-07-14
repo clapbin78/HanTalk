@@ -66,7 +66,7 @@ struct ChatListView: View {
                         AvatarView(name: viewModel.title(for: room, myID: me.id))
                         VStack(alignment: .leading, spacing: 4) {
                             HStack {
-                                Text(viewModel.title(for: room, myID: me.id))
+                                TranslatableText(text: viewModel.title(for: room, myID: me.id))
                                     .font(.headline)
                                 if room.kind == .group {
                                     Text("\(room.memberIDs.count)")

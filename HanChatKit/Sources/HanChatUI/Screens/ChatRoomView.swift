@@ -298,7 +298,8 @@ struct MessageBubbleView: View {
     private var bubbleContent: some View {
         switch message.content {
         case .text(let text):
-            Text(text)
+            // 꾹 눌러 번역 → 말풍선 안에서 번역본으로 즉시 교체
+            TranslatableText(text: text)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
                 .background(

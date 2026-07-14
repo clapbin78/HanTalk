@@ -30,8 +30,11 @@ public struct HanChatConfiguration: Sendable {
     public var paidEmoticonsEnabled: Bool
     /// AI 서비스 구현. Phase 4에서 실제 AI API 구현으로 교체.
     public var aiService: any AIAssistantService
-    /// 🚩 AI 기능 스위치 (답장 추천·번역). 수익화 전까지 꺼둔다 — UI 완전 숨김.
+    /// 🚩 AI 기능 스위치 (답장 추천). 수익화 전까지 꺼둔다 — UI 완전 숨김.
     public var aiAssistantEnabled: Bool
+    /// 번역 서비스. nil이면 UI가 시스템 온디바이스 번역(iOS 18+, 무료)을 사용.
+    /// Phase 4에서 AI 번역 구현을 주입하면 전 번역이 그쪽으로 흐른다.
+    public var translationService: (any TranslationService)?
 
     public init(
         transport: any ChatTransport,
@@ -45,7 +48,8 @@ public struct HanChatConfiguration: Sendable {
         paymentGateway: any PaymentGateway = StubPaymentGateway(),
         paidEmoticonsEnabled: Bool = false,
         aiService: any AIAssistantService = StubAIAssistantService(),
-        aiAssistantEnabled: Bool = false
+        aiAssistantEnabled: Bool = false,
+        translationService: (any TranslationService)? = nil
     ) {
         self.transport = transport
         self.localRetention = localRetention
@@ -59,6 +63,7 @@ public struct HanChatConfiguration: Sendable {
         self.paidEmoticonsEnabled = paidEmoticonsEnabled
         self.aiService = aiService
         self.aiAssistantEnabled = aiAssistantEnabled
+        self.translationService = translationService
     }
 }
 
@@ -88,7 +93,8 @@ public final class HanChatClient: @unchecked Sendable {
     public let getMyEmoticons: GetMyEmoticonsUseCase
     public let acquireEmoticon: AcquireEmoticonUseCase
     public let suggestReplies: SuggestRepliesUseCase
-    public let translateMessage: TranslateMessageUseCase
+    /// 커스텀 번역 서비스가 주입된 경우에만 존재. nil이면 UI가 시스템 번역 사용.
+    public let translateText: TranslateTextUseCase?
 
     private let syncEngine: MessageSyncEngine
 
@@ -144,10 +150,9 @@ public final class HanChatClient: @unchecked Sendable {
             ai: configuration.aiService,
             enabled: configuration.aiAssistantEnabled
         )
-        self.translateMessage = TranslateMessageUseCase(
-            ai: configuration.aiService,
-            enabled: configuration.aiAssistantEnabled
-        )
+        self.translateText = configuration.translationService.map {
+            TranslateTextUseCase(service: $0)
+        }
 
         self.syncEngine = MessageSyncEngine(store: store, transport: transport, notifier: notifier)
     }

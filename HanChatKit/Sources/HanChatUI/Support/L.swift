@@ -100,4 +100,18 @@ enum L {
     // 그림판
     static var drawTitle: String { String(localized: "그림 그리기", bundle: .module) }
     static var replayA11y: String { String(localized: "그리는 과정 재생", bundle: .module) }
+
+    // 번역
+    static var translate: String { String(localized: "번역", bundle: .module) }
+    static var showOriginal: String { String(localized: "원문 보기", bundle: .module) }
+    static var translatedBadge: String { String(localized: "번역됨", bundle: .module) }
+
+    // 접근 권한 안내 (한국 정보통신망법 대응)
+    static var permissionNoticeTitle: String { String(localized: "앱 접근 권한 안내", bundle: .module) }
+    static var permissionNoticeSubtitle: String { String(localized: "서비스 이용을 위해 아래 접근 권한을 사용해요.", bundle: .module) }
+    static var permNotifTitle: String { String(localized: "알림 (선택)", bundle: .module) }
+    static var permNotifDesc: String { String(localized: "새 메시지 도착 알림", bundle: .module) }
+    static var permContactsTitle: String { String(localized: "연락처 (선택)", bundle: .module) }
+    static var permContactsDesc: String { String(localized: "가입한 친구 찾기", bundle: .module) }
+    static var permissionNoticeFooter: String { String(localized: "선택 접근권한은 허용하지 않아도 서비스를 이용할 수 있어요.", bundle: .module) }
 }

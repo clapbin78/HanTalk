@@ -45,6 +45,7 @@ struct MainTabView: View {
         TabView {
             FriendListView(client: client, me: me)
                 .tabItem { Label(L.tabFriends, systemImage: "person.2.fill") }
+            // (환경 주입은 TabView 전체에 — 아래 .environment 참고)
 
             ChatListView(client: client, me: me)
                 .tabItem { Label(L.tabChats, systemImage: "message.fill") }
@@ -55,6 +56,8 @@ struct MainTabView: View {
             SettingsView(client: client, me: me)
                 .tabItem { Label(L.tabSettings, systemImage: "gearshape.fill") }
         }
+        // 커스텀 번역 서비스(주입된 경우)를 모든 TranslatableText에 전달
+        .environment(\.hanChatTranslate, client.translateText)
     }
 }
 
