@@ -249,11 +249,11 @@ void main() {
         id: 'm', roomId: 'r', senderId: 's',
         content: const TextContent('안녕'), sentAt: DateTime.now());
 
-      final off = SuggestRepliesUseCase(const StubAIAssistantService(), enabled: false);
+      const off = SuggestRepliesUseCase(StubAIAssistantService(), enabled: false);
       expect(() => off(context: [message], languageCode: 'ko'),
           throwsA(isA<FeatureDisabledException>()));
 
-      final on = SuggestRepliesUseCase(const StubAIAssistantService(), enabled: true);
+      const on = SuggestRepliesUseCase(StubAIAssistantService(), enabled: true);
       expect(await on(context: [message], languageCode: 'ko'), isNotEmpty);
       expect(await on(context: [], languageCode: 'ko'), isEmpty);
     });
