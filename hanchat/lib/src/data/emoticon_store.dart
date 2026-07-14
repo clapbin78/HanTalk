@@ -202,12 +202,41 @@ class InMemoryProfileService implements ProfileService {
   Future<PublicProfile?> fetch(String userId) async => _profiles[userId];
 }
 
-/// 신고 스텁 — 데모용 (접수 개수만 기록). 실서비스는 Firebase 구현으로 교체.
+/// 신고 스텁 — 데모용. 실서비스는 Firebase 구현으로 교체.
+/// 관리자 조회/정지는 데모에선 토큰 검사 없이 인메모리로 동작.
 class InMemoryReportService implements ReportService {
   final List<Report> received = [];
+  final List<Suspension> _suspensions = [];
 
   @override
   Future<void> submit(Report report) async => received.add(report);
+
+  @override
+  Future<List<Report>> list({required String adminToken}) async =>
+      List.of(received.reversed);
+
+  @override
+  Future<void> suspendUser(
+      {required String userId,
+      required String reason,
+      required String adminToken}) async {
+    _suspensions.removeWhere((s) => s.userId == userId);
+    _suspensions.add(Suspension(
+      userId: userId,
+      reason: reason,
+      adminId: 'demo-admin',
+      suspendedAt: DateTime.now(),
+    ));
+  }
+
+  @override
+  Future<List<Suspension>> suspensions({required String adminToken}) async =>
+      List.of(_suspensions.reversed);
+
+  @override
+  Future<void> unsuspend(
+          {required String userId, required String adminToken}) async =>
+      _suspensions.removeWhere((s) => s.userId == userId);
 }
 
 /// 관리자 스텁 — 데모용. 실서비스는 Cloud Function 검증으로 교체.

@@ -6,6 +6,7 @@ import '../core/entities.dart';
 import '../core/support_content.dart';
 import '../data/client.dart';
 import '../data/read_receipt_setting.dart';
+import 'admin_page.dart';
 import 'admin_session.dart';
 import 'drawing.dart';
 import 'emoticon_shop_page.dart';
@@ -159,6 +160,19 @@ class _SettingsPageState extends State<SettingsPage> {
                     title: l10n.t('privacy'), url: _config.privacyPolicyUrl!))),
           ),
         ],
+        // 관리자 콘솔 — 관리자 모드일 때만 노출
+        ListenableBuilder(
+          listenable: AdminSession.instance,
+          builder: (context, _) => AdminSession.instance.isAdmin
+              ? ListTile(
+                  leading: const Icon(Icons.admin_panel_settings, color: Colors.green),
+                  title: Text(l10n.t('admin.openConsole')),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(
+                      builder: (_) => const AdminPage())),
+                )
+              : const SizedBox.shrink(),
+        ),
         // 앱 정보 — 10회 탭하면 관리자 잠금 해제 (숨겨진 진입점)
         ListenableBuilder(
           listenable: AdminSession.instance,

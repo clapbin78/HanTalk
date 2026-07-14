@@ -2,6 +2,7 @@
 //
 // 차단(이미 구현)과 짝을 이룬다. 신고는 서버로 접수되어 운영자가 검토한다.
 // 채팅 내용은 24시간 후 사라지므로, 신고 시점에 스냅샷을 함께 첨부해 증거를 남긴다.
+import 'errors.dart';
 
 /// 신고 사유.
 enum ReportReason {
@@ -60,9 +61,53 @@ class Report {
       };
 }
 
-/// 신고 접수 서비스. hanchat_firebase가 Firestore 구현 제공.
+/// 사용자 정지 기록 (운영자가 남기는 사유 메모 포함).
+class Suspension {
+  final String userId;
+  final String reason; // 정지 사유 (운영자 메모)
+  final String adminId; // 정지시킨 관리자
+  final DateTime suspendedAt;
+
+  const Suspension({
+    required this.userId,
+    required this.reason,
+    required this.adminId,
+    required this.suspendedAt,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'userId': userId,
+        'reason': reason,
+        'adminId': adminId,
+        'suspendedAt': suspendedAt.toIso8601String(),
+      };
+
+  factory Suspension.fromJson(Map<String, dynamic> json) => Suspension(
+        userId: json['userId'] as String,
+        reason: json['reason'] as String,
+        adminId: json['adminId'] as String? ?? '',
+        suspendedAt: DateTime.parse(json['suspendedAt'] as String),
+      );
+}
+
+/// 신고 접수 + (관리자) 조회·정지 서비스. hanchat_firebase가 Firestore 구현 제공.
 abstract interface class ReportService {
   Future<void> submit(Report report);
+
+  /// 관리자: 접수된 신고 목록 (adminToken으로 서버가 권한 확인).
+  Future<List<Report>> list({required String adminToken});
+
+  /// 관리자: 유저 정지 (사유 메모 필수). 정지된 유저는 서버가 접근을 막는다.
+  Future<void> suspendUser(
+      {required String userId,
+      required String reason,
+      required String adminToken});
+
+  /// 관리자: 정지 목록.
+  Future<List<Suspension>> suspensions({required String adminToken});
+
+  /// 관리자: 정지 해제.
+  Future<void> unsuspend({required String userId, required String adminToken});
 }
 
 /// 신고 접수 UseCase.
@@ -90,4 +135,31 @@ class SubmitReportUseCase {
         snapshot: snapshot,
         createdAt: DateTime.now(),
       ));
+}
+
+/// 관리자 신고·정지 관리 UseCase (관리자 토큰 필요).
+class AdminModerationUseCase {
+  final ReportService _service;
+  const AdminModerationUseCase(this._service);
+
+  Future<List<Report>> reports(String adminToken) =>
+      _service.list(adminToken: adminToken);
+
+  Future<List<Suspension>> suspensions(String adminToken) =>
+      _service.suspensions(adminToken: adminToken);
+
+  Future<void> suspend(
+      {required String userId,
+      required String reason,
+      required String adminToken}) {
+    if (reason.trim().isEmpty) {
+      throw const ValidationException('error.suspendReasonRequired');
+    }
+    return _service.suspendUser(
+        userId: userId, reason: reason.trim(), adminToken: adminToken);
+  }
+
+  Future<void> unsuspend(
+          {required String userId, required String adminToken}) =>
+      _service.unsuspend(userId: userId, adminToken: adminToken);
 }

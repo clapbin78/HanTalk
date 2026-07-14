@@ -222,6 +222,70 @@ class FirebaseReportService implements ReportService {
       'createdAt': FieldValue.serverTimestamp(),
     });
   }
+
+  // 관리자 조회/정지는 서버에서 adminToken을 검증하는 Cloud Function을 통하는 것이
+  // 안전하다. 아래는 Firestore 규칙(운영자 커스텀 클레임)으로 보호되는 직접 접근 버전.
+  @override
+  Future<List<Report>> list({required String adminToken}) async {
+    final snap = await _db
+        .collection('reports')
+        .orderBy('createdAt', descending: true)
+        .limit(200)
+        .get();
+    return snap.docs.map((d) {
+      final data = d.data();
+      return Report(
+        id: d.id,
+        reporterId: data['reporterId'] as String? ?? '',
+        targetType: ReportTargetType.values
+            .byName(data['targetType'] as String? ?? 'message'),
+        targetId: data['targetId'] as String? ?? '',
+        reportedUserId: data['reportedUserId'] as String? ?? '',
+        reason:
+            ReportReason.values.byName(data['reason'] as String? ?? 'other'),
+        detail: data['detail'] as String?,
+        snapshot: data['snapshot'] as String?,
+        createdAt:
+            (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      );
+    }).toList();
+  }
+
+  @override
+  Future<void> suspendUser(
+      {required String userId,
+      required String reason,
+      required String adminToken}) async {
+    await _db.collection('suspensions').doc(userId).set({
+      'userId': userId,
+      'reason': reason,
+      'adminId': fb_auth.FirebaseAuth.instance.currentUser?.uid ?? 'admin',
+      'suspendedAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  @override
+  Future<List<Suspension>> suspensions({required String adminToken}) async {
+    final snap = await _db
+        .collection('suspensions')
+        .orderBy('suspendedAt', descending: true)
+        .get();
+    return snap.docs.map((d) {
+      final data = d.data();
+      return Suspension(
+        userId: data['userId'] as String? ?? d.id,
+        reason: data['reason'] as String? ?? '',
+        adminId: data['adminId'] as String? ?? '',
+        suspendedAt:
+            (data['suspendedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      );
+    }).toList();
+  }
+
+  @override
+  Future<void> unsuspend(
+          {required String userId, required String adminToken}) =>
+      _db.collection('suspensions').doc(userId).delete();
 }
 
 /// EntitlementService의 Firebase 구현 — 임티샵 옵션(업로드/판매) 결제 확인.

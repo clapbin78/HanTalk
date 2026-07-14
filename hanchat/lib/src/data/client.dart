@@ -121,6 +121,7 @@ class HanChatClient {
   final GetProfileUseCase getProfile;
   final PublishProfileUseCase publishProfile;
   final SubmitReportUseCase submitReport;
+  final AdminModerationUseCase adminModeration;
   final SyncContactsUseCase syncContacts;
   final GetFriendsUseCase getFriends;
   final ManageFriendsUseCase manageFriends;
@@ -168,6 +169,7 @@ class HanChatClient {
         getProfile = GetProfileUseCase(config.profileService),
         publishProfile = PublishProfileUseCase(config.profileService),
         submitReport = SubmitReportUseCase(config.reportService),
+        adminModeration = AdminModerationUseCase(config.reportService),
         syncContacts = SyncContactsUseCase(friendRepository),
         getFriends = GetFriendsUseCase(friendRepository),
         manageFriends = ManageFriendsUseCase(friendRepository),

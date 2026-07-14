@@ -318,6 +318,36 @@ void main() {
       // JSON 직렬화 확인 (서버 전송용)
       expect(report.toJson()['reason'], 'harassment');
     });
+
+    test('관리자: 신고 조회 + 정지(사유 필수) + 해제', () async {
+      final service = InMemoryReportService();
+      final submit = SubmitReportUseCase(service);
+      final admin = AdminModerationUseCase(service);
+
+      await submit(
+        reporterId: 'me',
+        targetType: ReportTargetType.profile,
+        targetId: 'bad-user',
+        reportedUserId: 'bad-user',
+        reason: ReportReason.spam,
+      );
+      expect((await admin.reports('token')).length, 1);
+
+      // 사유 없이 정지 → 거부
+      expect(() => admin.suspend(userId: 'bad-user', reason: '  ', adminToken: 'token'),
+          throwsA(isA<ValidationException>()));
+
+      // 사유 메모와 함께 정지 → 기록 남음
+      await admin.suspend(
+          userId: 'bad-user', reason: '스팸 반복', adminToken: 'token');
+      final suspensions = await admin.suspensions('token');
+      expect(suspensions.single.userId, 'bad-user');
+      expect(suspensions.single.reason, '스팸 반복');
+
+      // 해제
+      await admin.unsuspend(userId: 'bad-user', adminToken: 'token');
+      expect(await admin.suspensions('token'), isEmpty);
+    });
   });
 
   group('AI · 번역 (🚩 AI는 플래그 OFF, 번역은 상시)', () {

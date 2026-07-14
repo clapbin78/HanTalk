@@ -27,6 +27,11 @@ class ValidationException extends HanChatException {
   const ValidationException(super.message);
 }
 
+/// 권한 없음 (관리자 토큰 무효 등).
+class UnauthorizedException extends HanChatException {
+  const UnauthorizedException() : super('unauthorized');
+}
+
 /// 플래그로 숨겨진 기능 접근 (유료 이모티콘, AI 등).
 class FeatureDisabledException extends HanChatException {
   const FeatureDisabledException() : super('feature not available yet');
