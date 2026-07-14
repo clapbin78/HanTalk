@@ -65,7 +65,10 @@ class InMemoryChatTransport implements ChatTransport {
     for (final recipient in recipientIds) {
       _deliver(envelope, to: recipient);
     }
-    if (botEnabled && recipientIds.contains(botId)) {
+    // 봇은 실제 메시지에만 답장 (읽음 신호 등 제어 메시지는 무시)
+    if (botEnabled &&
+        recipientIds.contains(botId) &&
+        envelope.message.content.isVisible) {
       unawaited(
         Future<void>.delayed(const Duration(seconds: 1)).then((_) => _botReply(envelope)),
       );
@@ -103,6 +106,7 @@ class InMemoryChatTransport implements ChatTransport {
       TextContent(text: final t) => '"$t" 잘 받았어요! 저는 데모 봇이라 24시간 뒤면 이 대화도 사라져요 ⏳',
       DrawingContent() => '그림 멋진데요? 🎨 획이 벡터로 재생되는 거 보셨나요?',
       EmoticonContent() => '이모티콘 잘 받았어요! 😆 갤러리에 올리면 다른 사람들도 쓸 수 있어요',
+      ReadReceiptContent() => '', // 봇은 제어 메시지에 답하지 않음
     };
     final bot = User(
       id: botId,

@@ -354,6 +354,10 @@ class _FakeMessageRepository implements MessageRepository {
         content: content, sentAt: DateTime.now());
 
   @override
+  Future<void> sendReadReceipt(
+      {required String roomId, required List<String> messageIds}) async {}
+
+  @override
   Future<List<Message>> messages(String roomId) async => [];
 
   @override

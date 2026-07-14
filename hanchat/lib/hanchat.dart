@@ -21,6 +21,7 @@ export 'src/data/in_memory_transport.dart';
 export 'src/data/emoticon_store.dart';
 export 'src/data/phone_number_hasher.dart';
 export 'src/data/client.dart';
+export 'src/data/read_receipt_setting.dart';
 
 // UI — 완성형 채팅 화면
 export 'src/ui/root.dart';

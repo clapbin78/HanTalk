@@ -4,8 +4,9 @@
 
 - **관리자 비밀번호**: Firebase Secret Manager(`ADMIN_PASSWORD`)에만 저장.
   앱은 입력값을 `unlockAdmin` Cloud Function에 보내 **서버에서 검증**받고 토큰만 받는다.
-- **외부 API 키**(욕설 필터 등): 앱에 넣지 않고 `moderateText` 같은 프록시 Function이
-  대신 호출. 키는 서버 시크릿(`PROFANITY_API_KEY`)에만 존재.
+- **외부 API 키(향후)**: 현재 사용하는 외부 API는 없음. 나중에 키가 필요한 API를 쓰면
+  앱에 키를 넣지 말고 프록시 Function이 대신 호출 (패턴은 `functions/admin.js` 하단 주석).
+  키는 서버 시크릿에만 존재.
 - **왜?** 앱은 디컴파일하면 문자열이 다 보이고, 깃은 한 번 커밋하면 히스토리에 영원히 남는다.
 
 ### 깃 유출 방지 (이중 안전망)

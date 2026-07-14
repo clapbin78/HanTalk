@@ -6,6 +6,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../core/entities.dart';
 import '../data/client.dart';
+import '../data/read_receipt_setting.dart';
 import 'drawing.dart';
 import 'l10n.dart';
 import 'theme.dart';
@@ -22,6 +23,7 @@ class ChatRoomViewModel extends ChangeNotifier {
   List<String> aiSuggestions = []; // 🚩 aiAssistantEnabled 켜져야 UI 노출
   String? myId;
   String? errorKey;
+  bool readReceiptsOn = false; // 내 읽음표시 설정 (표시 게이트)
 
   ChatRoomViewModel(this._client, this.room);
 
@@ -31,16 +33,30 @@ class ChatRoomViewModel extends ChangeNotifier {
     _subscription ??= _client.observeMessages(room.id).listen((value) {
       messages = value;
       notifyListeners();
+      _markRead(); // 새 메시지 도착 시에도 읽음 신호
     });
     _client.getCurrentUser().then((me) {
       myId = me?.id;
       notifyListeners();
+      _markRead();
     });
     _client.getFriends().then((value) {
       friends = value;
       notifyListeners();
     });
+    ReadReceiptSetting.isEnabled().then((on) {
+      readReceiptsOn = on;
+      notifyListeners();
+    });
     if (aiEnabled) _loadAISuggestions();
+  }
+
+  Future<void> _markRead() async {
+    final id = myId;
+    if (id == null || messages.isEmpty) return;
+    final on = await ReadReceiptSetting.isEnabled();
+    await _client.markRoomRead(
+        roomId: room.id, messages: messages, myId: id, enabled: on);
   }
 
   @override
@@ -194,6 +210,8 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                             ? _vm.senderName(message, l10n)
                             : null,
                         onForward: _forward,
+                        isGroup: widget.room.kind == RoomKind.group,
+                        showReadMark: _vm.readReceiptsOn,
                       );
                     },
                   ),
@@ -402,12 +420,16 @@ class _MessageBubble extends StatelessWidget {
   final bool isMine;
   final String? senderName;
   final void Function(MessageContent) onForward;
+  final bool isGroup;
+  final bool showReadMark; // 내 읽음표시 설정이 켜졌을 때만
 
   const _MessageBubble({
     required this.message,
     required this.isMine,
     this.senderName,
     required this.onForward,
+    this.isGroup = false,
+    this.showReadMark = false,
   });
 
   @override
@@ -470,6 +492,8 @@ class _MessageBubble extends StatelessWidget {
           l10n,
           SizedBox(width: 140, height: 140, child: DrawingReplayView(payload)),
         ),
+      // 제어 메시지(읽음 신호)는 화면에 표시되지 않음 (여기 도달할 일 없음)
+      ReadReceiptContent() => const SizedBox.shrink(),
     };
 
     final meta = Column(
@@ -482,6 +506,12 @@ class _MessageBubble extends StatelessWidget {
         if (isMine && message.deliveryState == DeliveryState.failed)
           Text(l10n.t('room.failed'),
               style: const TextStyle(fontSize: 10, color: Colors.red)),
+        // 읽음표시 (내 메시지 + 설정 켜짐 + 읽은 사람 있음)
+        if (isMine && showReadMark && message.readCount > 0)
+          isGroup
+              ? Text('${l10n.t('room.read')} ${message.readCount}',
+                  style: TextStyle(fontSize: 10, color: Colors.green.shade600))
+              : Icon(Icons.done_all, size: 13, color: Colors.green.shade600),
         Text(TimeOfDay.fromDateTime(message.sentAt).format(context),
             style: TextStyle(fontSize: 10, color: Colors.grey.shade500)),
       ],

@@ -19,7 +19,7 @@ class LocalStore {
     final db = await f.openDatabase(
       path,
       options: OpenDatabaseOptions(
-        version: 2,
+        version: 3,
         // 같은 경로 재사용 시 인스턴스 공유 방지 (테스트 격리 + 명시적 수명 관리)
         singleInstance: false,
         onUpgrade: (db, oldVersion, _) async {
@@ -27,6 +27,11 @@ class LocalStore {
             // v2: 친구 상태(active/hidden/blocked) 추가
             await db.execute(
                 "ALTER TABLE friends ADD COLUMN status TEXT NOT NULL DEFAULT 'active'");
+          }
+          if (oldVersion < 3) {
+            // v3: 읽음표시 — 읽은 사람 id JSON 배열
+            await db.execute(
+                "ALTER TABLE messages ADD COLUMN read_by TEXT NOT NULL DEFAULT '[]'");
           }
         },
         onCreate: (db, _) async {
@@ -50,7 +55,8 @@ class LocalStore {
           await db.execute('''
             CREATE TABLE messages (
               id TEXT PRIMARY KEY, room_id TEXT NOT NULL, sender_id TEXT NOT NULL,
-              content TEXT NOT NULL, sent_at TEXT NOT NULL, state TEXT NOT NULL
+              content TEXT NOT NULL, sent_at TEXT NOT NULL, state TEXT NOT NULL,
+              read_by TEXT NOT NULL DEFAULT '[]'
             )''');
           await db.execute('CREATE INDEX idx_messages_room ON messages(room_id, sent_at)');
           await db.execute('CREATE INDEX idx_messages_sent ON messages(sent_at)');
@@ -238,8 +244,27 @@ class LocalStore {
               jsonDecode(r['content'] as String) as Map<String, dynamic>),
           sentAt: DateTime.parse(r['sent_at'] as String),
           deliveryState: DeliveryState.values.byName(r['state'] as String),
+          readCount:
+              (jsonDecode((r['read_by'] as String?) ?? '[]') as List).length,
         ),
     ];
+  }
+
+  /// 내가 보낸 메시지들에 읽은 사람(readerId)을 추가. (읽음표시)
+  Future<void> markRead(List<String> messageIds, String readerId) async {
+    for (final id in messageIds) {
+      final rows = await _db.query('messages',
+          columns: ['read_by'], where: 'id = ?', whereArgs: [id], limit: 1);
+      if (rows.isEmpty) continue;
+      final readers =
+          (jsonDecode((rows.first['read_by'] as String?) ?? '[]') as List)
+              .cast<String>()
+              .toSet();
+      if (readers.add(readerId)) {
+        await _db.update('messages', {'read_by': jsonEncode(readers.toList())},
+            where: 'id = ?', whereArgs: [id]);
+      }
+    }
   }
 
   Future<void> insertMessage(Message message) => _db.insert(

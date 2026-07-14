@@ -117,6 +117,7 @@ class HanChatL10n {
     'room.sending': ['전송 중', 'Sending', '送信中', '发送中'],
     'room.failed': ['실패', 'Failed', '失敗', '失败'],
     'room.myEmoticons': ['내 이모티콘', 'My Emoticons', 'マイスタンプ', '我的表情'],
+    'room.read': ['읽음', 'Read', '既読', '已读'],
     'room.emptyCollection': ['보관함이 비어있어요', 'Your collection is empty', '保管箱が空です', '收藏夹是空的'],
     'room.emptyCollectionDesc': ['이모티콘 탭에서 받아오거나 직접 그려보세요!', 'Get some from the Emoticons tab, or draw your own!', 'スタンプタブで入手するか、自分で描いてみましょう！', '去表情标签页领取，或自己画一个吧！'],
     // 이모티콘
@@ -140,6 +141,8 @@ class HanChatL10n {
     'settings.chat': ['채팅', 'Chat', 'チャット', '聊天'],
     'settings.replay': ['그림 그리는 과정 재생', 'Replay drawing strokes', '描く過程を再生', '回放绘制过程'],
     'settings.replayDesc': ['끄면 완성된 그림만 바로 표시돼요.', 'When off, finished drawings appear instantly.', 'オフにすると完成した絵だけが表示されます。', '关闭后将直接显示完成的图画。'],
+    'settings.readReceipt': ['읽음 표시', 'Read Receipts', '既読表示', '已读回执'],
+    'settings.readReceiptDesc': ['켠 사람끼리만 서로 읽음 표시가 보여요.', 'Only shown between people who both turned it on.', 'お互いにオンにした人同士だけ既読が表示されます。', '仅在双方都开启时互相显示已读。'],
     'settings.retention': ['메시지 보관', 'Message Retention', 'メッセージ保存', '消息保存'],
     'settings.autoDelete': ['자동 삭제', 'Auto-delete', '自動削除', '自动删除'],
     'settings.never': ['안 함', 'Never', 'しない', '从不'],

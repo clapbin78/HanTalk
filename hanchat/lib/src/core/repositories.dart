@@ -37,6 +37,11 @@ abstract interface class ChatRoomRepository {
 abstract interface class MessageRepository {
   /// 로컬 저장(즉시 표시) → 서버 업로드 순서로 처리.
   Future<Message> send(MessageContent content, {required String roomId});
+
+  /// 읽음 신호를 방의 다른 멤버(발신자들)에게 전송 (로컬 저장 안 함).
+  Future<void> sendReadReceipt(
+      {required String roomId, required List<String> messageIds});
+
   Future<List<Message>> messages(String roomId);
   Stream<List<Message>> observeMessages(String roomId);
 

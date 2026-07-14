@@ -111,6 +111,7 @@ class HanChatClient {
   final ObserveChatRoomsUseCase observeRooms;
   final SendMessageUseCase sendMessage;
   final ObserveMessagesUseCase observeMessages;
+  final MarkRoomReadUseCase markRoomRead;
   final PurgeExpiredMessagesUseCase purgeExpired;
   final UploadEmoticonUseCase uploadEmoticon;
   final BrowseEmoticonsUseCase browseEmoticons;
@@ -152,6 +153,7 @@ class HanChatClient {
         observeRooms = ObserveChatRoomsUseCase(roomRepository),
         sendMessage = SendMessageUseCase(messageRepository),
         observeMessages = ObserveMessagesUseCase(messageRepository),
+        markRoomRead = MarkRoomReadUseCase(messageRepository),
         purgeExpired =
             PurgeExpiredMessagesUseCase(messageRepository, config.localRetention),
         uploadEmoticon = UploadEmoticonUseCase(emoticonRepository, userRepository,

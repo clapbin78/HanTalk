@@ -3,6 +3,7 @@ import 'dart:async';
 import '../core/entities.dart';
 import 'chat_transport.dart';
 import 'local_store.dart';
+import 'read_receipt_setting.dart';
 import 'repositories_impl.dart';
 
 /// 수신 파이프라인: 우편함 구독 → 로컬 저장 → 서버 봉투 삭제(ack).
@@ -22,6 +23,17 @@ class MessageSyncEngine {
         // 차단한 상대의 메시지는 저장하지 않고 서버에서만 지운다
         final senderStatus = await _store.friendStatus(envelope.sender.id);
         if (senderStatus == FriendStatus.blocked) {
+          await _transport.acknowledge(envelopeId: envelope.id, userId: userId);
+          return;
+        }
+
+        // 읽음 신호(제어 메시지): 말풍선으로 저장하지 않고 내 메시지들에 읽음 반영.
+        // 내가 읽음표시를 켰을 때만 반영한다 (상호 opt-in).
+        if (envelope.message.content case ReadReceiptContent(messageIds: final ids)) {
+          if (await ReadReceiptSetting.isEnabled()) {
+            await _store.markRead(ids, envelope.sender.id);
+            _notifier.notify('messages:${envelope.message.roomId}');
+          }
           await _transport.acknowledge(envelopeId: envelope.id, userId: userId);
           return;
         }

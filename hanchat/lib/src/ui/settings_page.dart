@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../core/entities.dart';
 import '../core/support_content.dart';
 import '../data/client.dart';
+import '../data/read_receipt_setting.dart';
 import 'admin_session.dart';
 import 'drawing.dart';
 import 'emoticon_shop_page.dart';
@@ -21,6 +22,7 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   User? _me;
   bool _replayEnabled = true;
+  bool _readReceiptEnabled = false;
   int _versionTaps = 0; // 앱 정보 10회 탭 → 관리자 잠금 해제
 
   HanChatConfig get _config => HanChat.client.config;
@@ -33,6 +35,9 @@ class _SettingsPageState extends State<SettingsPage> {
     });
     DrawingReplaySetting.isEnabled().then((enabled) {
       if (mounted) setState(() => _replayEnabled = enabled);
+    });
+    ReadReceiptSetting.isEnabled().then((enabled) {
+      if (mounted) setState(() => _readReceiptEnabled = enabled);
     });
   }
 
@@ -72,6 +77,16 @@ class _SettingsPageState extends State<SettingsPage> {
           onChanged: (value) {
             setState(() => _replayEnabled = value);
             DrawingReplaySetting.setEnabled(value);
+          },
+        ),
+        SwitchListTile(
+          title: Text(l10n.t('settings.readReceipt')),
+          subtitle: Text(l10n.t('settings.readReceiptDesc'),
+              style: const TextStyle(fontSize: 12)),
+          value: _readReceiptEnabled,
+          onChanged: (value) {
+            setState(() => _readReceiptEnabled = value);
+            ReadReceiptSetting.setEnabled(value);
           },
         ),
         _sectionHeader(l10n.t('settings.retention')),

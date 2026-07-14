@@ -2,6 +2,7 @@
 // "보내기 → 우체통 → 수신 → ack → 24시간 삭제" 전체 흐름 검증.
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hanchat/hanchat.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 Future<HanChatClient> makeClient(
@@ -204,6 +205,81 @@ void main() {
 
     expect(await client.messageRepository.messages(room.id), isEmpty,
         reason: '차단한 상대의 메시지는 저장되지 않아야 함');
+    await client.stop();
+  });
+
+  test('읽음표시: 켠 경우에만 상대 읽음이 내 메시지에 반영', () async {
+    SharedPreferences.setMockInitialValues(
+        {'hanchat.readReceiptsEnabled': true});
+
+    final transport = InMemoryChatTransport(botEnabled: false);
+    final client = await makeClient(transport);
+    final me = await client.registerUser(nickname: '나', phoneNumber: '01011112222');
+    final room = await client.createRoom.direct(friendId: 'friendB', myId: me.id);
+    final sent = await client.sendMessage(const TextContent('읽었니?'), roomId: room.id);
+    await client.start();
+
+    // friendB가 읽음 신호를 보냄 (제어 메시지)
+    await transport.send(
+      TransportEnvelope(
+        message: Message(
+          id: 'receipt-1',
+          roomId: room.id,
+          senderId: 'friendB',
+          content: ReadReceiptContent([sent.id]),
+          sentAt: DateTime.now(),
+        ),
+        room: room,
+        sender: User(
+            id: 'friendB',
+            nickname: 'B',
+            phoneNumberHash: 'h',
+            createdAt: DateTime.now()),
+      ),
+      recipientIds: [me.id],
+    );
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+
+    final messages = await client.messageRepository.messages(room.id);
+    expect(messages.single.readCount, 1, reason: '읽음표시 켜져 있으면 반영');
+    // 읽음 신호는 말풍선으로 저장되지 않음
+    expect(messages.length, 1);
+    await client.stop();
+  });
+
+  test('읽음표시: 꺼진 경우 반영 안 됨', () async {
+    SharedPreferences.setMockInitialValues(
+        {'hanchat.readReceiptsEnabled': false});
+
+    final transport = InMemoryChatTransport(botEnabled: false);
+    final client = await makeClient(transport);
+    final me = await client.registerUser(nickname: '나', phoneNumber: '01011113333');
+    final room = await client.createRoom.direct(friendId: 'friendC', myId: me.id);
+    final sent = await client.sendMessage(const TextContent('안녕'), roomId: room.id);
+    await client.start();
+
+    await transport.send(
+      TransportEnvelope(
+        message: Message(
+          id: 'receipt-2',
+          roomId: room.id,
+          senderId: 'friendC',
+          content: ReadReceiptContent([sent.id]),
+          sentAt: DateTime.now(),
+        ),
+        room: room,
+        sender: User(
+            id: 'friendC',
+            nickname: 'C',
+            phoneNumberHash: 'h',
+            createdAt: DateTime.now()),
+      ),
+      recipientIds: [me.id],
+    );
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+
+    final messages = await client.messageRepository.messages(room.id);
+    expect(messages.single.readCount, 0, reason: '읽음표시 꺼져 있으면 반영 안 함');
     await client.stop();
   });
 

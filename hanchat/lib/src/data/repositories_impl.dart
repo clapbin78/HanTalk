@@ -205,6 +205,36 @@ class DefaultMessageRepository implements MessageRepository {
   }
 
   @override
+  Future<void> sendReadReceipt(
+      {required String roomId, required List<String> messageIds}) async {
+    if (messageIds.isEmpty) return;
+    final me = await _store.currentUser();
+    if (me == null) return;
+    final room = await _store.room(roomId);
+    if (room == null) return;
+
+    // 제어 메시지 — 로컬 저장 없이 다른 멤버에게만 업로드
+    final receipt = Message(
+      id: _newId(),
+      roomId: roomId,
+      senderId: me.id,
+      content: ReadReceiptContent(messageIds),
+      sentAt: DateTime.now(),
+      deliveryState: DeliveryState.sent,
+    );
+    final recipients = room.memberIds.where((id) => id != me.id).toList();
+    if (recipients.isEmpty) return;
+    try {
+      await _transport.send(
+        TransportEnvelope(message: receipt, room: room, sender: me),
+        recipientIds: recipients,
+      );
+    } catch (_) {
+      // 읽음 신호는 실패해도 조용히 무시 (핵심 기능 아님)
+    }
+  }
+
+  @override
   Future<List<Message>> messages(String roomId) => _store.messages(roomId);
 
   @override

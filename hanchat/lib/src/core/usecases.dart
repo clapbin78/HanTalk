@@ -96,6 +96,27 @@ class ObserveMessagesUseCase {
   Stream<List<Message>> call(String roomId) => _messages.observeMessages(roomId);
 }
 
+/// 방을 열었을 때 상대 메시지들에 읽음 신호 전송.
+/// enabled(내 읽음표시 설정)가 true일 때만 보낸다 → 상호 opt-in.
+class MarkRoomReadUseCase {
+  final MessageRepository _messages;
+  const MarkRoomReadUseCase(this._messages);
+
+  Future<void> call({
+    required String roomId,
+    required List<Message> messages,
+    required String myId,
+    required bool enabled,
+  }) async {
+    if (!enabled) return;
+    final incomingIds = [
+      for (final m in messages)
+        if (m.senderId != myId && m.content.isVisible) m.id,
+    ];
+    await _messages.sendReadReceipt(roomId: roomId, messageIds: incomingIds);
+  }
+}
+
 class PurgeExpiredMessagesUseCase {
   final MessageRepository _messages;
   final RetentionPolicy _policy;

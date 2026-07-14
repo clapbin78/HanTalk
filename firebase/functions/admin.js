@@ -1,12 +1,14 @@
 /**
- * 관리자 모드 + 시크릿(외부 API 키) 프록시 — Cloud Functions v2
+ * 관리자 모드 — Cloud Functions v2
  *
  * 원칙: 비밀번호·API 키는 앱에도 깃에도 절대 두지 않는다.
  *       Firebase Secret Manager에만 저장하고, 검증/호출은 서버에서만 한다.
  *
- * 배포 전 시크릿 등록 (예):
+ * 배포 전 시크릿 등록:
  *   firebase functions:secrets:set ADMIN_PASSWORD
- *   firebase functions:secrets:set PROFANITY_API_KEY
+ *
+ * ▶ 외부 API(키 필요)를 나중에 쓰게 되면: 앱에 키를 넣지 말고 이 파일에
+ *   프록시 함수를 하나 추가해 서버에서 대신 호출한다. 패턴은 파일 하단 주석 참고.
  */
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const crypto = require("crypto");
@@ -36,21 +38,20 @@ exports.unlockAdmin = onCall({ secrets: ["ADMIN_PASSWORD"] }, (request) => {
   return { token };
 });
 
-/**
- * 외부 API(예: 욕설 필터) 프록시 — 앱은 키 없이 이 함수만 호출.
- * 키는 서버 시크릿에만 있어 앱을 뜯어도, 깃에서도 노출되지 않는다.
- */
-exports.moderateText = onCall({ secrets: ["PROFANITY_API_KEY"] }, async (request) => {
-  const text = request.data?.text;
-  if (typeof text !== "string") {
-    throw new HttpsError("invalid-argument", "text required");
-  }
-  // 실제 구현 예시 (키는 process.env.PROFANITY_API_KEY 로만 접근):
-  //   const res = await fetch("https://api.example.com/moderate", {
-  //     method: "POST",
-  //     headers: { Authorization: `Bearer ${process.env.PROFANITY_API_KEY}` },
-  //     body: JSON.stringify({ text }),
-  //   });
-  //   return await res.json();
-  return { flagged: false }; // 스텁
-});
+// ─────────────────────────────────────────────────────────────
+// 외부 API 프록시 패턴 (참고용 — 지금은 사용하는 외부 API 없음)
+//
+// 키가 필요한 외부 API를 쓰게 되면, 앱에 키를 넣지 말고 아래처럼
+// 서버 함수가 대신 호출한다. 앱은 이 함수만 부르고 키는 서버 시크릿에만 존재.
+//
+//   firebase functions:secrets:set SOME_API_KEY
+//
+//   exports.callSomeApi = onCall({ secrets: ["SOME_API_KEY"] }, async (request) => {
+//     const res = await fetch("https://api.example.com/endpoint", {
+//       method: "POST",
+//       headers: { Authorization: `Bearer ${process.env.SOME_API_KEY}` },
+//       body: JSON.stringify(request.data),
+//     });
+//     return await res.json();
+//   });
+// ─────────────────────────────────────────────────────────────

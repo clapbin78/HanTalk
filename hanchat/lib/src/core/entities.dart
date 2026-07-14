@@ -119,14 +119,21 @@ class ChatRoom {
 /// 메시지 전달 상태.
 enum DeliveryState { sending, sent, delivered, failed }
 
-/// 메시지 내용 — 텍스트 / 그림 / 이모티콘 (Dart 3 sealed class).
+/// 메시지 내용 — 텍스트 / 그림 / 이모티콘 + 제어신호(읽음).
+///
+/// sealed class라 나중에 제어 케이스(수정/삭제 통보 등)를 추가하기 쉽다.
+/// 제어 케이스(ReadReceiptContent)는 말풍선으로 표시하지 않고 SyncEngine이 처리한다.
 sealed class MessageContent {
   const MessageContent();
+
+  /// 화면에 말풍선으로 표시되는 콘텐츠인지 (제어신호는 false).
+  bool get isVisible => this is! ReadReceiptContent;
 
   String get preview => switch (this) {
         TextContent(text: final t) => t,
         DrawingContent() => '🎨',
         EmoticonContent() => '😊',
+        ReadReceiptContent() => '', // 표시 안 함
       };
 
   Map<String, dynamic> toJson() => switch (this) {
@@ -136,6 +143,10 @@ sealed class MessageContent {
             'type': 'emoticon',
             'emoticonID': id,
             'payload': p.toJson(),
+          },
+        ReadReceiptContent(messageIds: final ids) => {
+            'type': 'read',
+            'messageIDs': ids,
           },
       };
 
@@ -148,6 +159,8 @@ sealed class MessageContent {
             emoticonId: json['emoticonID'] as String,
             payload: DrawingPayload.fromJson(json['payload'] as Map<String, dynamic>),
           ),
+        'read' => ReadReceiptContent(
+            (json['messageIDs'] as List).cast<String>()),
         _ => throw FormatException('unknown content type: ${json['type']}'),
       };
 }
@@ -169,6 +182,13 @@ class EmoticonContent extends MessageContent {
   const EmoticonContent({required this.emoticonId, required this.payload});
 }
 
+/// 읽음 신호 (제어 메시지) — 내가 읽은 메시지 id들을 발신자에게 알린다.
+/// 읽음표시를 켠(opt-in) 사용자만 보내고, 받는 쪽도 켠 경우에만 반영한다.
+class ReadReceiptContent extends MessageContent {
+  final List<String> messageIds;
+  const ReadReceiptContent(this.messageIds);
+}
+
 /// 채팅 메시지.
 class Message {
   final String id;
@@ -178,6 +198,10 @@ class Message {
   final DateTime sentAt;
   final DeliveryState deliveryState;
 
+  /// 이 메시지를 읽은 상대 수 (읽음표시 켠 경우에만 채워짐).
+  /// 1:1은 0 또는 1, 단톡은 읽은 사람 수.
+  final int readCount;
+
   const Message({
     required this.id,
     required this.roomId,
@@ -185,15 +209,17 @@ class Message {
     required this.content,
     required this.sentAt,
     this.deliveryState = DeliveryState.sending,
+    this.readCount = 0,
   });
 
-  Message copyWith({DeliveryState? deliveryState}) => Message(
+  Message copyWith({DeliveryState? deliveryState, int? readCount}) => Message(
         id: id,
         roomId: roomId,
         senderId: senderId,
         content: content,
         sentAt: sentAt,
         deliveryState: deliveryState ?? this.deliveryState,
+        readCount: readCount ?? this.readCount,
       );
 
   Map<String, dynamic> toJson() => {
