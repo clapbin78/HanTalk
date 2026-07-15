@@ -137,11 +137,15 @@ class MarkRoomReadUseCase {
 
 class PurgeExpiredMessagesUseCase {
   final MessageRepository _messages;
-  final RetentionPolicy _policy;
-  const PurgeExpiredMessagesUseCase(this._messages, this._policy);
+
+  /// 정책 리졸버 — 호출 시점에 정책을 결정한다.
+  /// 사용자가 '사라지는 메시지'를 바꾸면 다음 실행부터 즉시 반영되도록 함수로 받음.
+  /// (core는 순수 Dart라 SharedPreferences를 모른다 → data 레이어가 함수를 주입)
+  final Future<RetentionPolicy> Function() _resolvePolicy;
+  const PurgeExpiredMessagesUseCase(this._messages, this._resolvePolicy);
 
   /// 앱 시작/포그라운드 진입 시 호출. 삭제 개수 반환.
-  Future<int> call() => _messages.purgeExpired(_policy);
+  Future<int> call() async => _messages.purgeExpired(await _resolvePolicy());
 }
 
 // ── 이모티콘 ──────────────────────────────────────────────

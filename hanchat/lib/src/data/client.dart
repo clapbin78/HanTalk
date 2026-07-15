@@ -11,6 +11,7 @@ import 'chat_transport.dart';
 import 'emoticon_store.dart';
 import 'local_store.dart';
 import 'repositories_impl.dart';
+import 'retention_setting.dart';
 import 'sync_engine.dart';
 
 /// SDK 설정. 호스트 앱이 configure 시점에 넘긴다.
@@ -178,8 +179,9 @@ class HanChatClient {
         sendMessage = SendMessageUseCase(messageRepository),
         observeMessages = ObserveMessagesUseCase(messageRepository),
         markRoomRead = MarkRoomReadUseCase(messageRepository),
-        purgeExpired =
-            PurgeExpiredMessagesUseCase(messageRepository, config.localRetention),
+        // 사용자가 고른 '사라지는 메시지' 설정을 우선, 없으면 앱 기본(config)
+        purgeExpired = PurgeExpiredMessagesUseCase(messageRepository,
+            () => RetentionSetting.resolve(config.localRetention)),
         uploadEmoticon = UploadEmoticonUseCase(emoticonRepository, userRepository,
             allowPaid: config.paidEmoticonsEnabled),
         browseEmoticons = BrowseEmoticonsUseCase(emoticonRepository),

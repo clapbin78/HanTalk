@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -38,7 +39,9 @@ Future<void> main() async {
 
   await HanChat.configure(HanChatConfig(
     transport: transport,
-    localRetention: RetentionPolicy.oneDay, // 기기 저장 메시지 24시간 자동삭제
+    // 기본은 기기에 계속 보관(일반 메신저처럼). 서버는 어떤 경우에도 메시지를
+    // 보관하지 않는다. 사용자가 설정에서 '사라지는 메시지'(24시간/7일)를 켤 수 있음.
+    localRetention: const RetentionPolicy.keepForever(),
     // 약관은 껍데기 앱 소유 (docs/ → GitHub Pages). 기기 언어별 페이지 주입.
     privacyPolicyUrl: Uri.parse('$base/privacy$suffix.html'),
     termsOfServiceUrl: Uri.parse('$base/terms$suffix.html'),
@@ -67,7 +70,7 @@ class HanTalkApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: _brand),
         useMaterial3: true,
         // iOS 느낌: 화면 전환 애니메이션을 쿠퍼티노(밀어서 넘기기)로
-        pageTransitionsTheme: const PageTransitionsTheme(builders: {
+        pageTransitionsTheme: PageTransitionsTheme(builders: {
           TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
           TargetPlatform.android: CupertinoPageTransitionsBuilder(),
         }),
@@ -130,7 +133,7 @@ class _RootWithSplashState extends State<_RootWithSplash> {
                       fontWeight: FontWeight.bold,
                       color: Colors.white)),
               SizedBox(height: 4),
-              Text('24시간 뒤 사라지는 대화',
+              Text('서버에 남지 않는 대화',
                   style: TextStyle(fontSize: 15, color: Colors.white70)),
             ]),
           ),

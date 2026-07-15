@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 
@@ -127,17 +128,9 @@ class _FriendsPageState extends State<FriendsPage> {
                           width: 20, height: 20,
                           child: CircularProgressIndicator(strokeWidth: 2)),
                     )
-                  : PopupMenuButton<ContactSyncMode>(
+                  : IconButton(
                       icon: const Icon(Icons.person_add),
-                      onSelected: _sync,
-                      itemBuilder: (_) => [
-                        PopupMenuItem(
-                            value: ContactSyncMode.all,
-                            child: Text(l10n.t('friends.syncAll'))),
-                        PopupMenuItem(
-                            value: ContactSyncMode.manual,
-                            child: Text(l10n.t('friends.syncManual'))),
-                      ],
+                      onPressed: () => _showAddSheet(l10n),
                     ),
               const SettingsButton(),
             ],
@@ -188,6 +181,37 @@ class _FriendsPageState extends State<FriendsPage> {
                 ]),
         );
       },
+    );
+  }
+
+  /// 친구 추가 방식 선택 — iOS 액션시트 (Cupertino)
+  void _showAddSheet(HanChatL10n l10n) {
+    showCupertinoModalPopup<void>(
+      context: context,
+      builder: (sheetContext) => CupertinoActionSheet(
+        title: Text(l10n.t('friends.addSheetTitle')),
+        actions: [
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.of(sheetContext).pop();
+              _sync(ContactSyncMode.all);
+            },
+            child: Text(l10n.t('friends.syncAll')),
+          ),
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.of(sheetContext).pop();
+              _sync(ContactSyncMode.manual);
+            },
+            child: Text(l10n.t('friends.syncManual')),
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          isDefaultAction: true,
+          onPressed: () => Navigator.of(sheetContext).pop(),
+          child: Text(l10n.t('cancel')),
+        ),
+      ),
     );
   }
 

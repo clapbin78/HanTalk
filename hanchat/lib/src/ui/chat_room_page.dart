@@ -6,7 +6,9 @@ import 'package:share_plus/share_plus.dart';
 
 import '../core/entities.dart';
 import '../data/client.dart';
+import '../data/notification_setting.dart';
 import '../data/read_receipt_setting.dart';
+import '../data/retention_setting.dart';
 import '../core/report.dart';
 import 'drawing.dart';
 import 'l10n.dart';
@@ -27,8 +29,17 @@ class ChatRoomViewModel extends ChangeNotifier {
   String? myId;
   String? errorKey;
   bool readReceiptsOn = false; // 내 읽음표시 설정 (표시 게이트)
+  bool muted = false; // 이 방 알림 음소거
+  String retentionOption = RetentionSetting.optionOff; // 사라지는 메시지 상태
 
   ChatRoomViewModel(this._client, this.room);
+
+  /// 상단 안내 배너 문구 키 — 보관 설정에 따라 다름
+  String get retentionBannerKey => switch (retentionOption) {
+        RetentionSetting.option24h => 'room.retention', // 24시간
+        RetentionSetting.option7d => 'room.disappear7d',
+        _ => 'room.serverOnly', // 계속 보관(기본) — 서버엔 안 남음만 안내
+      };
 
   bool get aiEnabled => _client.config.aiAssistantEnabled;
 
@@ -51,7 +62,21 @@ class ChatRoomViewModel extends ChangeNotifier {
       readReceiptsOn = on;
       notifyListeners();
     });
+    NotificationSetting.isRoomMuted(room.id).then((m) {
+      muted = m;
+      notifyListeners();
+    });
+    RetentionSetting.currentOption(_client.config.localRetention).then((opt) {
+      retentionOption = opt;
+      notifyListeners();
+    });
     if (aiEnabled) _loadAISuggestions();
+  }
+
+  Future<void> toggleMute() async {
+    muted = !muted;
+    notifyListeners();
+    await NotificationSetting.setRoomMuted(room.id, muted);
   }
 
   Future<void> _markRead() async {
@@ -205,12 +230,29 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                     },
                     child: Text(_vm.directTitle(l10n)),
                   ),
+            actions: [
+              // 이 방 알림 끄기/켜기 (특정인 음소거 = 그 사람과의 1:1 방 음소거)
+              IconButton(
+                icon: Icon(_vm.muted
+                    ? Icons.notifications_off
+                    : Icons.notifications_none),
+                tooltip: l10n.t(_vm.muted ? 'room.unmute' : 'room.mute'),
+                onPressed: () {
+                  _vm.toggleMute();
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(l10n.t(_vm.muted ? 'room.muted' : 'room.unmuted')),
+                    behavior: SnackBarBehavior.floating,
+                    duration: const Duration(seconds: 1),
+                  ));
+                },
+              ),
+            ],
           ),
           body: SafeArea(
             child: Column(children: [
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 6),
-                child: Text(l10n.t('room.retention'),
+                child: Text(l10n.t(_vm.retentionBannerKey),
                     style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
               ),
               Expanded(
@@ -230,6 +272,14 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                     itemCount: _vm.messages.length,
                     itemBuilder: (context, index) {
                       final message = _vm.messages[index];
+                      // 같은 사람이 같은 '분'에 연속으로 보낸 메시지는
+                      // 마지막 버블에만 시간 표시 (시간 표시 겹침 제거)
+                      final next = index + 1 < _vm.messages.length
+                          ? _vm.messages[index + 1]
+                          : null;
+                      final showTime = next == null ||
+                          next.senderId != message.senderId ||
+                          !_sameMinute(next.sentAt, message.sentAt);
                       return _MessageBubble(
                         message: message,
                         isMine: message.senderId == _vm.myId,
@@ -240,6 +290,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                         onForward: _forward,
                         isGroup: widget.room.kind == RoomKind.group,
                         showReadMark: _vm.readReceiptsOn,
+                        showTime: showTime,
                       );
                     },
                   ),
@@ -436,6 +487,13 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     });
   }
 
+  bool _sameMinute(DateTime a, DateTime b) =>
+      a.year == b.year &&
+      a.month == b.month &&
+      a.day == b.day &&
+      a.hour == b.hour &&
+      a.minute == b.minute;
+
   void _scrollToBottomSoon() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scroll.hasClients) {
@@ -452,6 +510,7 @@ class _MessageBubble extends StatelessWidget {
   final void Function(MessageContent) onForward;
   final bool isGroup;
   final bool showReadMark; // 내 읽음표시 설정이 켜졌을 때만
+  final bool showTime; // 같은 분 연속 메시지는 마지막에만 시간
 
   const _MessageBubble({
     required this.message,
@@ -460,6 +519,7 @@ class _MessageBubble extends StatelessWidget {
     required this.onForward,
     this.isGroup = false,
     this.showReadMark = false,
+    this.showTime = true,
   });
 
   @override
@@ -549,14 +609,21 @@ class _MessageBubble extends StatelessWidget {
         if (isMine && message.deliveryState == DeliveryState.failed)
           Text(l10n.t('room.failed'),
               style: const TextStyle(fontSize: 10, color: Colors.red)),
-        // 읽음표시 (내 메시지 + 설정 켜짐 + 읽은 사람 있음)
+        // 읽음표시 — 보낼 땐 표시 없음. 읽으면:
+        //   1:1 = 체크 1개, 단톡 = 읽은 사람 수 (내 설정이 켜진 경우에만)
         if (isMine && showReadMark && message.readCount > 0)
           isGroup
-              ? Text('${l10n.t('room.read')} ${message.readCount}',
-                  style: TextStyle(fontSize: 10, color: Colors.green.shade600))
-              : Icon(Icons.done_all, size: 13, color: Colors.green.shade600),
-        Text(TimeOfDay.fromDateTime(message.sentAt).format(context),
-            style: TextStyle(fontSize: 10, color: Colors.grey.shade500)),
+              ? Row(mainAxisSize: MainAxisSize.min, children: [
+                  Icon(Icons.done, size: 13, color: Colors.green.shade600),
+                  const SizedBox(width: 2),
+                  Text('${message.readCount}',
+                      style:
+                          TextStyle(fontSize: 10, color: Colors.green.shade600)),
+                ])
+              : Icon(Icons.done, size: 14, color: Colors.green.shade600),
+        if (showTime)
+          Text(TimeOfDay.fromDateTime(message.sentAt).format(context),
+              style: TextStyle(fontSize: 10, color: Colors.grey.shade500)),
       ],
     );
 

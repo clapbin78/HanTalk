@@ -92,21 +92,28 @@ class _DrawingReplayViewState extends State<DrawingReplayView>
   late final AnimationController _controller;
   bool _replayEnabled = true;
 
-  double get _duration =>
+  // 재생 타임라인(점 t의 최댓값) — elapsed 매핑에 사용.
+  double get _timeline =>
       widget.payload.totalDuration <= 0 ? 0.001 : widget.payload.totalDuration;
+
+  // 실제 애니메이션 벽시계 시간 — 원본이 길어도 최대 2.5초로 압축해 산뜻하게 재생.
+  int get _wallMs {
+    final capped = _timeline > 2.5 ? 2.5 : _timeline;
+    return (capped * 1000).round().clamp(300, 2500);
+  }
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: (_duration * 1000).round()),
-      value: 1, // 기본은 완성본
+      duration: Duration(milliseconds: _wallMs),
+      value: 1, // 기본은 완성본이 바로 보이게 (뭘 그렸는지 한눈에)
     );
+    // 자동 재생은 하지 않는다. (백지→완성 자동 애니메이션이 첫 화면을
+    // 백지로 보이게 했던 문제 해결.) 설정은 ▶ 버튼 노출 여부만 결정.
     DrawingReplaySetting.isEnabled().then((enabled) {
-      if (!mounted) return;
-      setState(() => _replayEnabled = enabled);
-      if (enabled) _controller.forward(from: 0); // 도착 직후 1회 자동 재생
+      if (mounted) setState(() => _replayEnabled = enabled);
     });
   }
 
@@ -125,7 +132,7 @@ class _DrawingReplayViewState extends State<DrawingReplayView>
           builder: (_, __) => CustomPaint(
             painter: DrawingPainter(
               widget.payload,
-              elapsed: _controller.value >= 1 ? null : _controller.value * _duration,
+              elapsed: _controller.value >= 1 ? null : _controller.value * _timeline,
             ),
           ),
         ),

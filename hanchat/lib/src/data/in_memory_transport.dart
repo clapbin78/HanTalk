@@ -65,14 +65,43 @@ class InMemoryChatTransport implements ChatTransport {
     for (final recipient in recipientIds) {
       _deliver(envelope, to: recipient);
     }
-    // 봇은 실제 메시지에만 답장 (읽음 신호 등 제어 메시지는 무시)
+    // 봇은 실제 메시지에만 반응 (읽음 신호 등 제어 메시지는 무시)
     if (botEnabled &&
         recipientIds.contains(botId) &&
         envelope.message.content.isVisible) {
+      // 0.6초 뒤 "읽음" 신호 → 단말 1대로도 읽음표시 테스트 가능
+      // (내 읽음표시 설정이 켜져 있어야 화면에 체크가 뜬다 — 상호 opt-in)
+      unawaited(
+        Future<void>.delayed(const Duration(milliseconds: 600))
+            .then((_) => _botMarkRead(envelope)),
+      );
       unawaited(
         Future<void>.delayed(const Duration(seconds: 1)).then((_) => _botReply(envelope)),
       );
     }
+  }
+
+  User get _botUser => User(
+        id: botId,
+        nickname: '한톡봇 🤖',
+        phoneNumberHash: '',
+        createdAt: DateTime.fromMillisecondsSinceEpoch(0),
+      );
+
+  /// 봇이 내 메시지를 "읽은" 것으로 처리 — 읽음 신호(제어 메시지)를 되돌려준다.
+  void _botMarkRead(TransportEnvelope envelope) {
+    final receipt = Message(
+      id: 'read-${DateTime.now().microsecondsSinceEpoch}',
+      roomId: envelope.room.id,
+      senderId: botId,
+      content: ReadReceiptContent([envelope.message.id]),
+      sentAt: DateTime.now(),
+      deliveryState: DeliveryState.sent,
+    );
+    _deliver(
+      TransportEnvelope(message: receipt, room: envelope.room, sender: _botUser),
+      to: envelope.sender.id,
+    );
   }
 
   @override

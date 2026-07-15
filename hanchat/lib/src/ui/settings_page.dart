@@ -1,11 +1,14 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../core/entities.dart';
 import '../core/support_content.dart';
 import '../data/client.dart';
+import '../data/notification_setting.dart';
 import '../data/read_receipt_setting.dart';
+import '../data/retention_setting.dart';
 import 'admin_page.dart';
 import 'admin_session.dart';
 import 'drawing.dart';
@@ -27,6 +30,10 @@ class _SettingsPageState extends State<SettingsPage> {
   User? _me;
   bool _replayEnabled = true;
   bool _readReceiptEnabled = false;
+  bool _notifEnabled = true;
+  bool _vibrateEnabled = true;
+  bool _soundEnabled = true;
+  String _retentionOption = RetentionSetting.optionOff;
   int _versionTaps = 0; // 앱 정보 10회 탭 → 관리자 잠금 해제
 
   HanChatConfig get _config => HanChat.client.config;
@@ -43,12 +50,29 @@ class _SettingsPageState extends State<SettingsPage> {
     ReadReceiptSetting.isEnabled().then((enabled) {
       if (mounted) setState(() => _readReceiptEnabled = enabled);
     });
+    NotificationSetting.notificationsEnabled().then((v) {
+      if (mounted) setState(() => _notifEnabled = v);
+    });
+    NotificationSetting.vibrateEnabled().then((v) {
+      if (mounted) setState(() => _vibrateEnabled = v);
+    });
+    NotificationSetting.soundEnabled().then((v) {
+      if (mounted) setState(() => _soundEnabled = v);
+    });
+    RetentionSetting.currentOption(_config.localRetention).then((opt) {
+      if (mounted) setState(() => _retentionOption = opt);
+    });
   }
+
+  String _retentionKey(String opt) => switch (opt) {
+        RetentionSetting.option24h => 'retention.h24',
+        RetentionSetting.option7d => 'retention.d7',
+        _ => 'retention.off',
+      };
 
   @override
   Widget build(BuildContext context) {
     final l10n = HanChatL10n.of(context);
-    final retention = _config.localRetention.expireAfter;
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.t('tab.settings'))),
@@ -111,14 +135,56 @@ class _SettingsPageState extends State<SettingsPage> {
             ReadReceiptSetting.setEnabled(value);
           },
         ),
+        // 알림 — 실제 푸시 발송은 서버(Firebase FCM) 연동 시 이 값을 참조
+        _sectionHeader(l10n.t('settings.notif')),
+        SwitchListTile(
+          secondary: const Icon(Icons.notifications_none),
+          title: Text(l10n.t('settings.notifAll')),
+          value: _notifEnabled,
+          onChanged: (value) {
+            setState(() => _notifEnabled = value);
+            NotificationSetting.setNotificationsEnabled(value);
+          },
+        ),
+        SwitchListTile(
+          secondary: const Icon(Icons.vibration),
+          title: Text(l10n.t('settings.vibrate')),
+          value: _vibrateEnabled,
+          // 알림이 꺼져 있으면 하위 설정 비활성
+          onChanged: _notifEnabled
+              ? (value) {
+                  setState(() => _vibrateEnabled = value);
+                  NotificationSetting.setVibrateEnabled(value);
+                }
+              : null,
+        ),
+        SwitchListTile(
+          secondary: const Icon(Icons.volume_up_outlined),
+          title: Text(l10n.t('settings.sound')),
+          value: _soundEnabled,
+          onChanged: _notifEnabled
+              ? (value) {
+                  setState(() => _soundEnabled = value);
+                  NotificationSetting.setSoundEnabled(value);
+                }
+              : null,
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Text(l10n.t('settings.notifNote'),
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+        ),
         _sectionHeader(l10n.t('settings.retention')),
+        // 사라지는 메시지 — 기본은 계속 보관, 24시간/7일 선택 가능
         ListTile(
-          title: Text(l10n.t('settings.autoDelete')),
-          trailing: Text(retention == null
-              ? l10n.t('settings.never')
-              : l10n
-                  .t('settings.afterHours')
-                  .replaceFirst('%d', '${retention.inHours}')),
+          leading: const Icon(Icons.timer_outlined),
+          title: Text(l10n.t('settings.disappearing')),
+          trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+            Text(l10n.t(_retentionKey(_retentionOption)),
+                style: TextStyle(color: Colors.grey.shade600)),
+            const Icon(Icons.chevron_right),
+          ]),
+          onTap: () => _pickRetention(l10n),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -188,6 +254,41 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
         ),
       ]),
+    );
+  }
+
+  void _pickRetention(HanChatL10n l10n) {
+    void choose(String opt) {
+      Navigator.of(context).pop();
+      setState(() => _retentionOption = opt);
+      RetentionSetting.setOption(opt).then((_) {
+        // 더 짧은 기간으로 바꾸면 지난 메시지도 즉시 정리
+        HanChat.client.purgeExpired();
+      });
+    }
+
+    showCupertinoModalPopup<void>(
+      context: context,
+      builder: (sheetContext) => CupertinoActionSheet(
+        title: Text(l10n.t('settings.disappearing')),
+        message: Text(l10n.t('settings.disappearingDesc')),
+        actions: [
+          for (final opt in const [
+            RetentionSetting.optionOff,
+            RetentionSetting.option24h,
+            RetentionSetting.option7d,
+          ])
+            CupertinoActionSheetAction(
+              onPressed: () => choose(opt),
+              child: Text(l10n.t(_retentionKey(opt))),
+            ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          isDefaultAction: true,
+          onPressed: () => Navigator.of(sheetContext).pop(),
+          child: Text(l10n.t('cancel')),
+        ),
+      ),
     );
   }
 

@@ -60,10 +60,10 @@ class HanChatL10n {
     // 온보딩
     'onboard.welcome': ['%@에 오신 걸 환영해요', 'Welcome to %@', '%@へようこそ', '欢迎来到%@'],
     'onboard.subtitle': [
-      '메시지는 서버에 남지 않고,\n기기에서도 24시간 뒤 사라져요.',
-      'Messages never stay on our servers,\nand disappear from your device after 24 hours.',
-      'メッセージはサーバーに残らず、\n端末からも24時間後に消えます。',
-      '消息不会保存在服务器上，\n24小时后也会从设备中消失。'
+      '메시지는 서버에 남지 않아요.\n원하면 사라지는 메시지로 자동삭제할 수 있어요.',
+      'Messages never stay on our servers.\nTurn on disappearing messages to auto-delete them too.',
+      'メッセージはサーバーに残りません。\n消えるメッセージで自動削除もできます。',
+      '消息不会保存在服务器上。\n可开启“消失的消息”实现自动删除。'
     ],
     'onboard.agreeTerms': ['이용약관 동의 (필수)', 'Agree to Terms of Service (required)', '利用規約に同意（必須）', '同意服务条款（必填）'],
     'onboard.agreePrivacy': ['개인정보 수집·이용 동의 (필수)', 'Agree to Privacy Policy (required)', '個人情報の取扱いに同意（必須）', '同意隐私政策（必填）'],
@@ -106,6 +106,7 @@ class HanChatL10n {
     'friends.select': ['친구 선택', 'Select Friends', '友だちを選択', '选择朋友'],
     'friends.add': ['등록 (%d)', 'Add (%d)', '登録 (%d)', '添加 (%d)'],
     'friends.permNeeded': ['연락처 권한이 필요해요. 설정에서 허용해 주세요.', 'Contacts permission is required. Please allow it in Settings.', '連絡先へのアクセス許可が必要です。設定で許可してください。', '需要通讯录权限，请在设置中允许。'],
+    'friends.addSheetTitle': ['친구 추가', 'Add Friends', '友だちを追加', '添加朋友'],
     // 채팅
     'chats.group': ['단톡방', 'Group Chat', 'グループチャット', '群聊'],
     'chats.start': ['대화를 시작해 보세요', 'Start a conversation', '会話を始めましょう', '开始聊天吧'],
@@ -117,11 +118,17 @@ class HanChatL10n {
     'chats.newGroup': ['단톡방 만들기', 'New Group Chat', 'グループ作成', '创建群聊'],
     'chats.create': ['만들기', 'Create', '作成', '创建'],
     'room.retention': ['⏳ 메시지는 24시간 뒤 자동으로 사라져요', '⏳ Messages disappear after 24 hours', '⏳ メッセージは24時間後に自動で消えます', '⏳ 消息将在24小时后自动消失'],
+    'room.disappear7d': ['⏳ 메시지는 7일 뒤 자동으로 사라져요', '⏳ Messages disappear after 7 days', '⏳ メッセージは7日後に自動で消えます', '⏳ 消息将在7天后自动消失'],
+    'room.serverOnly': ['🔒 대화 내용은 서버에 저장되지 않아요', '🔒 Messages are never stored on our servers', '🔒 メッセージはサーバーに保存されません', '🔒 消息不会保存在服务器上'],
     'room.input': ['메시지 입력', 'Message', 'メッセージを入力', '输入消息'],
     'room.sending': ['전송 중', 'Sending', '送信中', '发送中'],
     'room.failed': ['실패', 'Failed', '失敗', '失败'],
     'room.myEmoticons': ['내 이모티콘', 'My Emoticons', 'マイスタンプ', '我的表情'],
     'room.read': ['읽음', 'Read', '既読', '已读'],
+    'room.mute': ['알림 끄기', 'Mute', '通知オフ', '关闭提醒'],
+    'room.unmute': ['알림 켜기', 'Unmute', '通知オン', '开启提醒'],
+    'room.muted': ['이 방 알림을 껐어요', 'Muted this chat', 'このチャットをミュートしました', '已关闭该聊天提醒'],
+    'room.unmuted': ['이 방 알림을 켰어요', 'Unmuted this chat', 'このチャットのミュートを解除しました', '已开启该聊天提醒'],
     'room.emptyCollection': ['보관함이 비어있어요', 'Your collection is empty', '保管箱が空です', '收藏夹是空的'],
     'room.emptyCollectionDesc': ['이모티콘 탭에서 받아오거나 직접 그려보세요!', 'Get some from the Emoticons tab, or draw your own!', 'スタンプタブで入手するか、自分で描いてみましょう！', '去表情标签页领取，或自己画一个吧！'],
     // 이모티콘
@@ -144,18 +151,35 @@ class HanChatL10n {
     // 설정
     'settings.chat': ['채팅', 'Chat', 'チャット', '聊天'],
     'settings.replay': ['그림 그리는 과정 재생', 'Replay drawing strokes', '描く過程を再生', '回放绘制过程'],
-    'settings.replayDesc': ['끄면 완성된 그림만 바로 표시돼요.', 'When off, finished drawings appear instantly.', 'オフにすると完成した絵だけが表示されます。', '关闭后将直接显示完成的图画。'],
+    'settings.replayDesc': ['완성본은 항상 보이고, 켜면 ▶ 버튼으로 그리는 과정을 재생할 수 있어요.', 'The finished drawing always shows; when on, tap ▶ to replay how it was drawn.', '完成した絵は常に表示され、オンにすると▶で描く過程を再生できます。', '始终显示完成的图画；开启后可点 ▶ 回放绘制过程。'],
     'settings.readReceipt': ['읽음 표시', 'Read Receipts', '既読表示', '已读回执'],
     'settings.readReceiptDesc': ['켠 사람끼리만 서로 읽음 표시가 보여요.', 'Only shown between people who both turned it on.', 'お互いにオンにした人同士だけ既読が表示されます。', '仅在双方都开启时互相显示已读。'],
+    'settings.notif': ['알림', 'Notifications', '通知', '通知'],
+    'settings.notifAll': ['알림 받기', 'Receive notifications', '通知を受け取る', '接收通知'],
+    'settings.vibrate': ['진동', 'Vibration', 'バイブレーション', '振动'],
+    'settings.sound': ['소리', 'Sound', 'サウンド', '声音'],
+    'settings.notifNote': [
+      '특정 방/사람 알림 끄기는 각 채팅방 오른쪽 위 종 아이콘에서 설정할 수 있어요.',
+      'Mute a specific chat or person from the bell icon at the top of each chat.',
+      '特定のチャット/相手のミュートは、各チャット右上のベルアイコンから設定できます。',
+      '可在各聊天右上角的铃铛图标关闭指定聊天或联系人的提醒。'
+    ],
     'settings.retention': ['메시지 보관', 'Message Retention', 'メッセージ保存', '消息保存'],
-    'settings.autoDelete': ['자동 삭제', 'Auto-delete', '自動削除', '自动删除'],
-    'settings.never': ['안 함', 'Never', 'しない', '从不'],
-    'settings.afterHours': ['%d시간 후', 'After %d hours', '%d時間後', '%d小时后'],
+    'settings.disappearing': ['사라지는 메시지', 'Disappearing Messages', '消えるメッセージ', '消失的消息'],
+    'settings.disappearingDesc': [
+      '메시지는 어떤 경우에도 서버에 저장되지 않아요. 사라지는 메시지를 켜면 이 기기에서도 정한 시간 뒤 자동 삭제돼요.',
+      'Messages are never stored on our servers. Turn this on to also auto-delete them from this device after a set time.',
+      'メッセージはいかなる場合もサーバーに保存されません。オンにすると、この端末からも設定時間後に自動削除されます。',
+      '消息在任何情况下都不会保存在服务器上。开启后，也会在设定时间后从本设备自动删除。'
+    ],
+    'retention.off': ['안 함 (계속 보관)', 'Off (keep)', 'しない（保存）', '关闭（保留）'],
+    'retention.h24': ['24시간 후 삭제', 'After 24 hours', '24時間後に削除', '24小时后删除'],
+    'retention.d7': ['7일 후 삭제', 'After 7 days', '7日後に削除', '7天后删除'],
     'settings.retentionDesc': [
-      '메시지는 서버에 저장되지 않으며, 이 기기에서도 위 기간이 지나면 자동으로 삭제됩니다.',
-      'Messages are never stored on servers and are deleted from this device after the period above.',
-      'メッセージはサーバーに保存されず、この端末からも上記の期間後に自動削除されます。',
-      '消息不会存储在服务器上，超过上述期限后也会从本设备自动删除。'
+      '메시지는 어떤 옵션에서도 서버에 저장되지 않아요. 위 설정은 내 기기에서 메시지를 언제 지울지만 정해요.',
+      'Messages are never stored on our servers regardless of this option. It only controls when they are removed from your device.',
+      'メッセージはどのオプションでもサーバーに保存されません。上の設定は端末から削除するタイミングだけを決めます。',
+      '无论选择哪个选项，消息都不会保存在服务器上。以上设置仅决定何时从您的设备删除。'
     ],
     'settings.policies': ['약관 및 정책', 'Terms & Policies', '規約とポリシー', '条款与政策'],
     // 그림판
